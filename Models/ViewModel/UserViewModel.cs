@@ -16,6 +16,7 @@
         public long OFFICE_ID { get; set; }
         public string PHONE_LOGIN { get; set; }
         public string PHONE_PASS { get; set; }
+        public string AccessToken { get; set; }
     }
     
 }

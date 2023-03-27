@@ -1,14 +1,20 @@
-﻿using System;
+﻿using CallCenterCoreAPI.Models.ViewModel;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
+using System.Text;
 using System.Web;
 
 namespace CallCenterCoreAPI
 {
     public static class Utility
     {
+
         internal static string key = "b14ca5898a4e4133bbce2ea2315a1916";
         internal static DataTable ListToDatatable<T>(List<T> items)
         {
@@ -89,6 +95,9 @@ namespace CallCenterCoreAPI
             }
             return FinYear;
         }
+
+        
+
     }
 
 }

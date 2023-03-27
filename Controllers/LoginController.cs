@@ -2,29 +2,31 @@
 using CallCenterCoreAPI.Models;
 using CallCenterCoreAPI.Models.QueryModel;
 using CallCenterCoreAPI.Models.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-
-
+using System.Security.Claims;
+using System.Text;
 namespace CallCenterCoreAPI.Controllers
 {
+   
     [ApiController]
     [Route("[controller]")]
     public class LoginController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+      
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
+        IConfiguration _configuration;
 
-       
 
-        public LoginController(ILogger<LoginController> logger, ILoggerFactory loggerFactory)
+        public LoginController(ILogger<LoginController> logger, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
             _logger = logger;
             _loggerFactory = loggerFactory;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -38,6 +40,25 @@ namespace CallCenterCoreAPI.Controllers
             userViewModels = modelLoginRepository.ValidateUser(modelUser);
             if (!string.IsNullOrEmpty(userViewModels.USER_NAME))
             {
+                double expiryMins= string.IsNullOrEmpty(_configuration["Jwt:TokenValidityInMinutes"]) ? 5 : Convert.ToDouble(_configuration["Jwt:TokenValidityInMinutes"]);
+                var claims = new[] {
+                        new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                        new Claim("ID", userViewModels.ID.ToString()),
+                        new Claim("USER_NAME", userViewModels.USER_NAME),
+                        new Claim("NAME", userViewModels.NAME),
+                    };
+
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var token = new JwtSecurityToken(
+                    _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
+                claims,expires: DateTime.UtcNow.AddMinutes(expiryMins),signingCredentials: signIn);
+
+                userViewModels.AccessToken = new JwtSecurityTokenHandler().WriteToken(token);
                 _logger.LogInformation("Login success");
                 return Ok(userViewModels);
             }
@@ -48,20 +69,7 @@ namespace CallCenterCoreAPI.Controllers
                 return NotFound(-1);
             }
         }
-        //[Route("GetWeatherForecast")]
-        //[HttpGet(Name = "GetWeatherForecast")]
-        [HttpGet]
-        [Route("GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> GetWeatherForecast()
-        {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
-        }
-
+        
+        
     }
 }
