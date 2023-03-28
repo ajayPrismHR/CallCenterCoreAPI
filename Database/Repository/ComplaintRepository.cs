@@ -38,15 +38,10 @@ namespace CallCenterCoreAPI.Database.Repository
             parmretComplaint_no.Size = 8;
             parmretComplaint_no.Direction = ParameterDirection.Output;
             SqlParameter[] param ={
-                    new SqlParameter("@OFFICE_CODE",modelComplaint.OFFICE_CODE_ID),
-                    new SqlParameter("@CONSUMER_TYPE",1),
+                    new SqlParameter("@OFFICE_CODE",modelComplaint.OFFICE_CODE),
                     new SqlParameter("@COMPLAINT_TYPE",modelComplaint.ComplaintTypeId),
                     new SqlParameter("@COMPLAINT_SOURCE_ID",sourceId),//modelComplaint.com),
-                    new SqlParameter("@COMPLAINT_CURRENT_STATUS_ID",10),//modelComplaint.COMPLAINT_status_ID),
-                    new SqlParameter("@COMPLAINT_status",1),//modelComplaint.COMPLAINT_status_ID),
-                    new SqlParameter("@SDO_CODE",modelComplaint.SDO_CODE),
                     new SqlParameter("@NAME",modelComplaint.NAME),
-
                     new SqlParameter("@FATHER_NAME",modelComplaint.FATHER_NAME),
                     new SqlParameter("@KNO",modelComplaint.KNO),
                     new SqlParameter("@LANDLINE_NO",modelComplaint.LANDLINE_NO),
@@ -64,7 +59,6 @@ namespace CallCenterCoreAPI.Database.Repository
                     new SqlParameter("@AREA_CODE",modelComplaint.AREA_CODE),
                     new SqlParameter("@REMARKS",modelComplaint.REMARKS),
                      new SqlParameter("@USER_ID",modelComplaint.UserId),
-                     new SqlParameter("@AssigneeId",1),
                     parmretStatus,parmretMsg,parmretComplaint_no};
             try
             {
