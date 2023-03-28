@@ -70,8 +70,8 @@ namespace CallCenterCoreAPI.Database.Repository
             {
                 SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "COMPLAINTS_REGISTER_API", param);
 
-                if (param[37].Value != DBNull.Value)// status
-                    retStatus = Convert.ToInt32(param[37].Value);
+                if (param[28].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt32(param[28].Value);
                 else
                     retStatus = 0;
             }
