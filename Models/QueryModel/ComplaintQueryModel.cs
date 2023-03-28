@@ -30,7 +30,7 @@ namespace CallCenterCoreAPI.Models.QueryModel
         public string FATHER_NAME { get; set; }
         public string KNO { get; set; }
         public string LANDLINE_NO { get; set; }
-
+        public int sourceId { get; set; }
         public string MOBILE_NO { get; set; }
         public string ALTERNATE_MOBILE_NO { get; set; }
         public string EMAIL { get; set; }

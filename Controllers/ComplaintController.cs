@@ -25,7 +25,7 @@ namespace CallCenterCoreAPI.Controllers
 
         [HttpPost]
         [Route("SaveComplaint")]
-        public IActionResult SaveComplaint(COMPLAINT modelComplaint,int complaintSourceId=1)
+        public IActionResult SaveComplaint(COMPLAINT modelComplaint)
         {
             ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
             ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
@@ -42,7 +42,7 @@ namespace CallCenterCoreAPI.Controllers
             }
             else
             {
-                retStatus = modelComplaintRepository.SaveComplaint(modelComplaint, complaintSourceId);
+                retStatus = modelComplaintRepository.SaveComplaint(modelComplaint);
             }
             if (retStatus == 0)
                 return Ok("Complaint Save Successfully");

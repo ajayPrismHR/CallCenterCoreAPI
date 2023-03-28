@@ -12,7 +12,7 @@ namespace CallCenterCoreAPI.Database.Repository
         {
             _logger = logger;
         }
-        public int SaveComplaint(COMPLAINT modelComplaint, int sourceId)
+        public int SaveComplaint(COMPLAINT modelComplaint)
         {
             int retStatus = 0;
             string retMsg = String.Empty; ;
@@ -40,7 +40,7 @@ namespace CallCenterCoreAPI.Database.Repository
             SqlParameter[] param ={
                     new SqlParameter("@OFFICE_CODE",modelComplaint.OFFICE_CODE),
                     new SqlParameter("@COMPLAINT_TYPE",modelComplaint.ComplaintTypeId),
-                    new SqlParameter("@COMPLAINT_SOURCE_ID",sourceId),//modelComplaint.com),
+                    new SqlParameter("@COMPLAINT_SOURCE_ID",modelComplaint.sourceId),//modelComplaint.com),
                     new SqlParameter("@NAME",modelComplaint.NAME),
                     new SqlParameter("@FATHER_NAME",modelComplaint.FATHER_NAME),
                     new SqlParameter("@KNO",modelComplaint.KNO),
@@ -64,8 +64,8 @@ namespace CallCenterCoreAPI.Database.Repository
             {
                 SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "COMPLAINTS_REGISTER_API", param);
 
-                if (param[28].Value != DBNull.Value)// status
-                    retStatus = Convert.ToInt32(param[28].Value);
+                if (param[23].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt32(param[23].Value);
                 else
                     retStatus = 0;
             }
