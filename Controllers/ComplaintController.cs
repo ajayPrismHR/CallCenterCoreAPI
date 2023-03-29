@@ -59,7 +59,7 @@ namespace CallCenterCoreAPI.Controllers
         {
             ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
             ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
-            List<COMPLAINT> lstComplaints = modelComplaintRepository.GetPreviousComplaintByKno(kNO);
+            List<COMPLAINT_SEARCH> lstComplaints = modelComplaintRepository.GetPreviousComplaintByKno(kNO);
             return Ok(lstComplaints);
         }
 
@@ -69,7 +69,7 @@ namespace CallCenterCoreAPI.Controllers
         {
             ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
             ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
-            List<COMPLAINT> lstComplaints = modelComplaintRepository.GetPreviousComplaintNo(complaintNo);
+            List<COMPLAINT_SEARCH> lstComplaints = modelComplaintRepository.GetPreviousComplaintNo(complaintNo);
             return Ok(lstComplaints);
         }
 

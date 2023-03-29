@@ -113,60 +113,38 @@ namespace CallCenterCoreAPI.Database.Repository
         /// </summary>
         /// <param name="Kno"></param>
         /// <returns></returns>
-        public List<COMPLAINT> GetPreviousComplaintByKno(string Kno)
+        public List<COMPLAINT_SEARCH> GetPreviousComplaintByKno(string Kno)
         {
-            List<COMPLAINT> obj = new List<COMPLAINT>();
+            List<COMPLAINT_SEARCH> obj = new List<COMPLAINT_SEARCH>();
             SqlParameter[] param ={
-                    new SqlParameter("@OfficeCode",0),
-                    new SqlParameter("@ConsumerType",0),
-                    new SqlParameter("@Searchtype",0),
-                    new SqlParameter("@Searchparm",Kno) };
+                    new SqlParameter("@KNO",Kno) };
 
-            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "GetPreviousComplaint", param);
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "SearchComplaintByKNo", param);
             //Bind Complaint generic list using dataRow     
             foreach (DataRow dr in ds.Tables[0].Rows)
             {
                 obj.Add(
 
-                    new COMPLAINT
+                    new COMPLAINT_SEARCH
                     {
                         //Consumer Info
                         //SDO_CODE = Convert.ToString(dr["SDO_CODE"]),
 
-                        ADDRESS1 = Convert.ToString(dr["ADDRESS1"]),
-                        ADDRESS2 = Convert.ToString(dr["ADDRESS2"]),
-                        ADDRESS3 = Convert.ToString(dr["ADDRESS3"]),
+                        OFFICE_CODE = Convert.ToInt64(dr["OFFICE_CODE"]),
+                        ComplaintType = Convert.ToString(dr["COMPLAINT_TYPE"]),
+                        ComplaintNo = Convert.ToString(dr["COMPLAINT_NO"]),
                         NAME = Convert.ToString(dr["NAME"]),
                         FATHER_NAME = Convert.ToString(dr["FATHER_NAME"]),
                         KNO = Convert.ToString(dr["KNO"]),
-                        LANDMARK = Convert.ToString(dr["LANDMARK"]),
                         LANDLINE_NO = Convert.ToString(dr["LANDLINE_NO"]),
                         MOBILE_NO = Convert.ToString(dr["MOBILE_NO"]),
                         ALTERNATE_MOBILE_NO = Convert.ToString(dr["ALTERNATE_MOBILE_NO"]),
-                        CONSUMER_STATUS = Convert.ToString(dr["CONSUMER_STATUS"]),
-                        EMAIL = Convert.ToString(dr["EMAIL"]),
-                        FEEDER_NAME = Convert.ToString(dr["FEEDER_NAME"]),
-                        ACCOUNT_NO = Convert.ToString(dr["ACCOUNT_NO"]),
-                        AREA_CODE = Convert.ToString(dr["AREA_CODE"]),
+                        source = Convert.ToString(dr["SOURCE_NAME"]),
+                        ADDRESS = Convert.ToString(dr["ADDRESS"]),
 
                     }
                     );
             }
-            //foreach (DataRow dr in ds.Tables[1].Rows)
-            //{
-            //    obj.Add(
-
-            //        new COMPLAINT
-            //        {
-            //            //Consumer Previous Complaint
-            //            Complaintdate = Convert.ToString(dr["Complaintdate"]),
-            //            COMPLAINT_NO = Convert.ToString(dr["COMPLAINT_NO"]),
-            //            COMPLAINT_TYPE = Convert.ToString(dr["COMPLAINT_TYPE"]),
-            //            REMARKS = Convert.ToString(dr["REMARKS"]),
-            //            COMPLAINT_status = Convert.ToString(dr["COMPLAINT_status"]),
-            //        }
-            //        );
-            //}
             return (obj);
         }
         #endregion
@@ -177,14 +155,11 @@ namespace CallCenterCoreAPI.Database.Repository
         /// </summary>
         /// <param name="complaintNo"></param>
         /// <returns></returns>
-        public List<COMPLAINT> GetPreviousComplaintNo(string complaintNo)
+        public List<COMPLAINT_SEARCH> GetPreviousComplaintNo(string complaintNo)
         {
-            List<COMPLAINT> obj = new List<COMPLAINT>();
+            List<COMPLAINT_SEARCH> obj = new List<COMPLAINT_SEARCH>();
             SqlParameter[] param ={
-                    new SqlParameter("@OfficeCode",0),
-                    new SqlParameter("@ConsumerType",0),
-                    new SqlParameter("@Searchtype",0),
-                    new SqlParameter("@Searchparm",complaintNo) };
+                    new SqlParameter("@Complaint_NO",complaintNo) };
 
             DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "SearchComplaintByComplaintNo", param);
             //Bind Complaint generic list using dataRow     
@@ -192,45 +167,26 @@ namespace CallCenterCoreAPI.Database.Repository
             {
                 obj.Add(
 
-                    new COMPLAINT
+                    new COMPLAINT_SEARCH
                     {
                         //Consumer Info
                         //SDO_CODE = Convert.ToString(dr["SDO_CODE"]),
 
-                        ADDRESS1 = Convert.ToString(dr["ADDRESS1"]),
-                        ADDRESS2 = Convert.ToString(dr["ADDRESS2"]),
-                        ADDRESS3 = Convert.ToString(dr["ADDRESS3"]),
+                        OFFICE_CODE = Convert.ToInt64(dr["OFFICE_CODE"]),
+                        ComplaintType = Convert.ToString(dr["COMPLAINT_TYPE"]),
+                        ComplaintNo = Convert.ToString(dr["COMPLAINT_NO"]),
                         NAME = Convert.ToString(dr["NAME"]),
                         FATHER_NAME = Convert.ToString(dr["FATHER_NAME"]),
                         KNO = Convert.ToString(dr["KNO"]),
-                        LANDMARK = Convert.ToString(dr["LANDMARK"]),
                         LANDLINE_NO = Convert.ToString(dr["LANDLINE_NO"]),
                         MOBILE_NO = Convert.ToString(dr["MOBILE_NO"]),
                         ALTERNATE_MOBILE_NO = Convert.ToString(dr["ALTERNATE_MOBILE_NO"]),
-                        CONSUMER_STATUS = Convert.ToString(dr["CONSUMER_STATUS"]),
-                        EMAIL = Convert.ToString(dr["EMAIL"]),
-                        FEEDER_NAME = Convert.ToString(dr["FEEDER_NAME"]),
-                        ACCOUNT_NO = Convert.ToString(dr["ACCOUNT_NO"]),
-                        AREA_CODE = Convert.ToString(dr["AREA_CODE"]),
+                        source = Convert.ToString(dr["SOURCE_NAME"]),
+                        ADDRESS = Convert.ToString(dr["ADDRESS"]),
 
                     }
                     );
             }
-            //foreach (DataRow dr in ds.Tables[1].Rows)
-            //{
-            //    obj.Add(
-
-            //        new COMPLAINT
-            //        {
-            //            //Consumer Previous Complaint
-            //            Complaintdate = Convert.ToString(dr["Complaintdate"]),
-            //            COMPLAINT_NO = Convert.ToString(dr["COMPLAINT_NO"]),
-            //            COMPLAINT_TYPE = Convert.ToString(dr["COMPLAINT_TYPE"]),
-            //            REMARKS = Convert.ToString(dr["REMARKS"]),
-            //            COMPLAINT_status = Convert.ToString(dr["COMPLAINT_status"]),
-            //        }
-            //        );
-            //}
             return (obj);
         }
         #endregion

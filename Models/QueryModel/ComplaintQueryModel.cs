@@ -48,6 +48,22 @@ namespace CallCenterCoreAPI.Models.QueryModel
         
     }
 
+    public class COMPLAINT_SEARCH
+    {
+        public long OFFICE_CODE { get; set; }
+        public string ComplaintType { get; set; } //ref MST_COMPLAINT_TYPE
+        public string ComplaintNo { get; set; }
+        public string NAME { get; set; }
+        public string FATHER_NAME { get; set; }
+        public string KNO { get; set; }
+        public string LANDLINE_NO { get; set; }
+        public string source { get; set; }
+        public string MOBILE_NO { get; set; }
+        public string ALTERNATE_MOBILE_NO { get; set; }
+        public string ADDRESS { get; set; }
+
+    }
+
     public class MST_SUB_COMPLAINT_TYPE
     {
         public int ID { get; set; }
