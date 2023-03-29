@@ -12,6 +12,13 @@ namespace CallCenterCoreAPI.Database.Repository
         {
             _logger = logger;
         }
+
+        #region SaveComplaint
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="modelComplaint"></param>
+        /// <returns></returns>
         public int SaveComplaint(COMPLAINT modelComplaint)
         {
             int retStatus = 0;
@@ -76,6 +83,14 @@ namespace CallCenterCoreAPI.Database.Repository
             return retStatus;
 
         }
+        #endregion
+
+        #region SearchComplaint
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="kno"></param>
+        /// <returns></returns>
         public DataSet SearchComplaint(string kno)
         {
             DataSet ds= new DataSet();
@@ -90,5 +105,222 @@ namespace CallCenterCoreAPI.Database.Repository
             }
             return ds;
         }
+        #endregion
+
+        #region GetPreviousComplaintByKno
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="Kno"></param>
+        /// <returns></returns>
+        public List<COMPLAINT> GetPreviousComplaintByKno(string Kno)
+        {
+            List<COMPLAINT> obj = new List<COMPLAINT>();
+            SqlParameter[] param ={
+                    new SqlParameter("@OfficeCode",0),
+                    new SqlParameter("@ConsumerType",0),
+                    new SqlParameter("@Searchtype",0),
+                    new SqlParameter("@Searchparm",Kno) };
+
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "GetPreviousComplaint", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new COMPLAINT
+                    {
+                        //Consumer Info
+                        //SDO_CODE = Convert.ToString(dr["SDO_CODE"]),
+
+                        ADDRESS1 = Convert.ToString(dr["ADDRESS1"]),
+                        ADDRESS2 = Convert.ToString(dr["ADDRESS2"]),
+                        ADDRESS3 = Convert.ToString(dr["ADDRESS3"]),
+                        NAME = Convert.ToString(dr["NAME"]),
+                        FATHER_NAME = Convert.ToString(dr["FATHER_NAME"]),
+                        KNO = Convert.ToString(dr["KNO"]),
+                        LANDMARK = Convert.ToString(dr["LANDMARK"]),
+                        LANDLINE_NO = Convert.ToString(dr["LANDLINE_NO"]),
+                        MOBILE_NO = Convert.ToString(dr["MOBILE_NO"]),
+                        ALTERNATE_MOBILE_NO = Convert.ToString(dr["ALTERNATE_MOBILE_NO"]),
+                        CONSUMER_STATUS = Convert.ToString(dr["CONSUMER_STATUS"]),
+                        EMAIL = Convert.ToString(dr["EMAIL"]),
+                        FEEDER_NAME = Convert.ToString(dr["FEEDER_NAME"]),
+                        ACCOUNT_NO = Convert.ToString(dr["ACCOUNT_NO"]),
+                        AREA_CODE = Convert.ToString(dr["AREA_CODE"]),
+
+                    }
+                    );
+            }
+            //foreach (DataRow dr in ds.Tables[1].Rows)
+            //{
+            //    obj.Add(
+
+            //        new COMPLAINT
+            //        {
+            //            //Consumer Previous Complaint
+            //            Complaintdate = Convert.ToString(dr["Complaintdate"]),
+            //            COMPLAINT_NO = Convert.ToString(dr["COMPLAINT_NO"]),
+            //            COMPLAINT_TYPE = Convert.ToString(dr["COMPLAINT_TYPE"]),
+            //            REMARKS = Convert.ToString(dr["REMARKS"]),
+            //            COMPLAINT_status = Convert.ToString(dr["COMPLAINT_status"]),
+            //        }
+            //        );
+            //}
+            return (obj);
+        }
+        #endregion
+
+        #region GetPreviousComplaintNo
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="complaintNo"></param>
+        /// <returns></returns>
+        public List<COMPLAINT> GetPreviousComplaintNo(string complaintNo)
+        {
+            List<COMPLAINT> obj = new List<COMPLAINT>();
+            SqlParameter[] param ={
+                    new SqlParameter("@OfficeCode",0),
+                    new SqlParameter("@ConsumerType",0),
+                    new SqlParameter("@Searchtype",0),
+                    new SqlParameter("@Searchparm",complaintNo) };
+
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "SearchComplaintByComplaintNo", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new COMPLAINT
+                    {
+                        //Consumer Info
+                        //SDO_CODE = Convert.ToString(dr["SDO_CODE"]),
+
+                        ADDRESS1 = Convert.ToString(dr["ADDRESS1"]),
+                        ADDRESS2 = Convert.ToString(dr["ADDRESS2"]),
+                        ADDRESS3 = Convert.ToString(dr["ADDRESS3"]),
+                        NAME = Convert.ToString(dr["NAME"]),
+                        FATHER_NAME = Convert.ToString(dr["FATHER_NAME"]),
+                        KNO = Convert.ToString(dr["KNO"]),
+                        LANDMARK = Convert.ToString(dr["LANDMARK"]),
+                        LANDLINE_NO = Convert.ToString(dr["LANDLINE_NO"]),
+                        MOBILE_NO = Convert.ToString(dr["MOBILE_NO"]),
+                        ALTERNATE_MOBILE_NO = Convert.ToString(dr["ALTERNATE_MOBILE_NO"]),
+                        CONSUMER_STATUS = Convert.ToString(dr["CONSUMER_STATUS"]),
+                        EMAIL = Convert.ToString(dr["EMAIL"]),
+                        FEEDER_NAME = Convert.ToString(dr["FEEDER_NAME"]),
+                        ACCOUNT_NO = Convert.ToString(dr["ACCOUNT_NO"]),
+                        AREA_CODE = Convert.ToString(dr["AREA_CODE"]),
+
+                    }
+                    );
+            }
+            //foreach (DataRow dr in ds.Tables[1].Rows)
+            //{
+            //    obj.Add(
+
+            //        new COMPLAINT
+            //        {
+            //            //Consumer Previous Complaint
+            //            Complaintdate = Convert.ToString(dr["Complaintdate"]),
+            //            COMPLAINT_NO = Convert.ToString(dr["COMPLAINT_NO"]),
+            //            COMPLAINT_TYPE = Convert.ToString(dr["COMPLAINT_TYPE"]),
+            //            REMARKS = Convert.ToString(dr["REMARKS"]),
+            //            COMPLAINT_status = Convert.ToString(dr["COMPLAINT_status"]),
+            //        }
+            //        );
+            //}
+            return (obj);
+        }
+        #endregion
+
+        #region GetOfficeList
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
+        public List<ModelOfficeCode> GetOfficeList()
+        {
+            List<ModelOfficeCode> lstOfficeCode = new List<ModelOfficeCode>();
+            ModelOfficeCode objBlank = new ModelOfficeCode();
+            objBlank.OfficeId = "0";
+            objBlank.OfficeCode = "Select Office Code";
+            lstOfficeCode.Insert(0, objBlank);
+
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "GetOfficeCode");
+
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                objBlank = new ModelOfficeCode();
+                objBlank.OfficeCode = dr.ItemArray[0].ToString();
+                objBlank.OfficeId = dr.ItemArray[1].ToString();
+                lstOfficeCode.Add(objBlank);
+            }
+            return lstOfficeCode;
+        }
+        #endregion
+
+        #region GetComplaintTypeList
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="OFFICE_ID"></param>
+        /// <returns></returns>
+        public List<ModelComplaintType> GetComplaintTypeList(string OFFICE_ID)
+        {
+            List<ModelComplaintType> obj = new List<ModelComplaintType>();
+            SqlParameter[] param ={
+                    new SqlParameter("@OFFICE_ID",OFFICE_ID)};
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "GetComplaintType", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new ModelComplaintType
+                    {
+                        ComplaintTypeId = Convert.ToInt32(dr["Id"]),
+                        ComplaintType = Convert.ToString(dr["Complaint_Type"]),
+                        ComplaintTileColor = Convert.ToString(dr["TileColor"]),
+                        Status = Convert.ToBoolean(dr["IS_ACTIVE"]),
+                        COMPLAINT_COUNT = Convert.ToString(dr["COMPLAINT_COUNT"]),
+                    }
+                    );
+            }
+            return (obj);
+        }
+        #endregion
+
+        #region GetSubComplaintTypeList
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="ComplaintTypeId"></param>
+        /// <returns></returns>
+        public List<ModelComplaintType> GetSubComplaintTypeList(int ComplaintTypeId)
+        {
+            List<ModelComplaintType> obj = new List<ModelComplaintType>();
+            SqlParameter[] param ={
+                    new SqlParameter("@ComplaintTypeId",ComplaintTypeId)};
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "GetSubComplaintByComplaintType", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new ModelComplaintType
+                    {
+                        SubComplaintTypeId = Convert.ToInt32(dr["Id"]),
+                        SubComplaintType = Convert.ToString(dr["SUB_COMPLAINT_TYPE"]),
+                        Status = Convert.ToBoolean(dr["IS_ACTIVE"]),
+                    }
+                    );
+            }
+            return (obj);
+        }
+        #endregion
+
     }
 }

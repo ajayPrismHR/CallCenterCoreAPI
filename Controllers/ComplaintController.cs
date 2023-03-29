@@ -3,7 +3,9 @@ using CallCenterCoreAPI.Models;
 using CallCenterCoreAPI.Models.QueryModel;
 using CallCenterCoreAPI.Models.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using System.Configuration;
 using System.Data;
+using System.Linq;
 using System.Net;
 namespace CallCenterCoreAPI.Controllers
 {
@@ -50,6 +52,63 @@ namespace CallCenterCoreAPI.Controllers
                 return BadRequest("Error in Saving Complaint");
            
         }
-        
+
+        [HttpPost]
+        [Route("SearchComplaintByKNO")]
+        public IActionResult SearchComplaintByKNO(string kNO)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            List<COMPLAINT> lstComplaints = modelComplaintRepository.GetPreviousComplaintByKno(kNO);
+            return Ok(lstComplaints);
+        }
+
+        [HttpPost]
+        [Route("SearchComplaintByComplaintNo")]
+        public IActionResult SearchComplaintByComplaintNo(string complaintNo)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            List<COMPLAINT> lstComplaints = modelComplaintRepository.GetPreviousComplaintNo(complaintNo);
+            return Ok(lstComplaints);
+        }
+
+
+
+        [HttpGet]
+        [Route("GetOfficeList")]
+        public IActionResult GetOfficeList()
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            List<ModelOfficeCode> lst;
+            lst = modelComplaintRepository.GetOfficeList();
+            return Ok(lst);
+        }
+
+        [HttpGet]
+        [Route("GetComplaintTypeList")]
+        public IActionResult GetComplaintTypeList(string officeid)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+
+            List<ModelComplaintType> obj;
+            obj = modelComplaintRepository.GetComplaintTypeList(officeid);
+            return Ok(obj);
+        }
+
+        [HttpGet]
+        [Route("GetSubComplaintTypeList")]
+        public IActionResult GetSubComplaintTypeList(int ComplaintTypeId)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+
+            List<ModelComplaintType> obj;
+            obj = modelComplaintRepository.GetSubComplaintTypeList(ComplaintTypeId);
+            return Ok(obj);
+        }
+
     }
 }
