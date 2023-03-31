@@ -6,7 +6,7 @@ using System.Data;
 
 namespace CallCenterCoreAPI.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ComplaintController : ControllerBase
@@ -26,7 +26,7 @@ namespace CallCenterCoreAPI.Controllers
         {
             ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
             ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
-            int retStatus = 0;
+            Int64 retStatus = 0;
             string msg = string.Empty;
             DataSet dsResponse = modelComplaintRepository.SearchComplaint(modelComplaint.KNO);
             if (dsResponse.Tables[0].Rows.Count > 0)
@@ -42,7 +42,7 @@ namespace CallCenterCoreAPI.Controllers
                 retStatus = await modelComplaintRepository.SaveComplaint(modelComplaint);
             }
             if (retStatus > 0)
-                return Ok("Complaint Save Successfully");
+                return Ok("Complaint Successfully Registered With Complaint No. "+retStatus.ToString());
             else
                 return BadRequest("Error in Saving Complaint");
            

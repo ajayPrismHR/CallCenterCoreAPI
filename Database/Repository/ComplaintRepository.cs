@@ -21,9 +21,9 @@ namespace CallCenterCoreAPI.Database.Repository
         /// </summary>
         /// <param name="modelComplaint"></param>
         /// <returns></returns>
-        public async Task<int> SaveComplaint(COMPLAINT modelComplaint)
+        public async Task<Int64> SaveComplaint(COMPLAINT modelComplaint)
         {
-            int retStatus = 0;
+            Int64 retStatus = 0;
             string retMsg = String.Empty; ;
             COMPLAINT obj = new COMPLAINT();
             obj = modelComplaint;
@@ -43,7 +43,7 @@ namespace CallCenterCoreAPI.Database.Repository
 
             SqlParameter parmretComplaint_no = new SqlParameter();
             parmretComplaint_no.ParameterName = "@retComplaint_no";
-            parmretComplaint_no.DbType = DbType.Int32;
+            parmretComplaint_no.DbType = DbType.Int64;
             parmretComplaint_no.Size = 8;
             parmretComplaint_no.Direction = ParameterDirection.Output;
             SqlParameter[] param ={
@@ -73,8 +73,8 @@ namespace CallCenterCoreAPI.Database.Repository
             {
                 SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "COMPLAINTS_REGISTER_API", param);
 
-                if (param[23].Value != DBNull.Value)// status
-                    retStatus = Convert.ToInt32(param[23].Value);
+                if (param[22].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt64(param[22].Value);
                 if (retStatus > 0 && modelComplaint.MOBILE_NO.Length == 10)
                 {
                     _logger.LogInformation(modelComplaint.MOBILE_NO.ToString());
@@ -93,7 +93,7 @@ namespace CallCenterCoreAPI.Database.Repository
                 else
                     retStatus = 0;
             }
-            catch (Exception ex)
+                catch (Exception ex)
             {
                 retStatus = -1;
             }
