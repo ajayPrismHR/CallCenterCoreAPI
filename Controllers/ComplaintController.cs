@@ -1,33 +1,28 @@
 ﻿using CallCenterCoreAPI.Database.Repository;
-using CallCenterCoreAPI.Models;
 using CallCenterCoreAPI.Models.QueryModel;
-using CallCenterCoreAPI.Models.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Configuration;
 using System.Data;
-using System.Linq;
-using System.Net;
+
 namespace CallCenterCoreAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ComplaintController : ControllerBase
     {
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
-        IConfiguration _configuration;
 
-        private string conn = AppSettingsHelper.Setting(Key: "ConnectionStrings:DevConn");
-        public ComplaintController(ILogger<ComplaintController> logger, ILoggerFactory loggerFactory,IConfiguration configuration)
+        public ComplaintController(ILogger<ComplaintController> logger, ILoggerFactory loggerFactory)
         {
             _logger = logger;
             _loggerFactory = loggerFactory;
-            _configuration = configuration;
         }
 
         [HttpPost]
         [Route("SaveComplaint")]
-        public IActionResult SaveComplaint(COMPLAINT modelComplaint)
+        public async Task<IActionResult> SaveComplaint(COMPLAINT modelComplaint)
         {
             ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
             ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
@@ -44,9 +39,9 @@ namespace CallCenterCoreAPI.Controllers
             }
             else
             {
-                retStatus = modelComplaintRepository.SaveComplaint(modelComplaint);
+                retStatus = await modelComplaintRepository.SaveComplaint(modelComplaint);
             }
-            if (retStatus == 0)
+            if (retStatus > 0)
                 return Ok("Complaint Save Successfully");
             else
                 return BadRequest("Error in Saving Complaint");
@@ -55,21 +50,21 @@ namespace CallCenterCoreAPI.Controllers
 
         [HttpPost]
         [Route("SearchComplaintByKNO")]
-        public IActionResult SearchComplaintByKNO(string kNO)
+        public IActionResult SearchComplaintByKNO(ComplaintSearchQueryModel complaintSearchQueryModel)
         {
             ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
             ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
-            List<COMPLAINT_SEARCH> lstComplaints = modelComplaintRepository.GetPreviousComplaintByKno(kNO);
+            List<COMPLAINT_SEARCH> lstComplaints = modelComplaintRepository.GetPreviousComplaintByKno(complaintSearchQueryModel.KNO);
             return Ok(lstComplaints);
         }
 
         [HttpPost]
         [Route("SearchComplaintByComplaintNo")]
-        public IActionResult SearchComplaintByComplaintNo(string complaintNo)
+        public IActionResult SearchComplaintByComplaintNo(ComplaintSearchQueryModel complaintSearchQueryModel)
         {
             ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
             ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
-            List<COMPLAINT_SEARCH> lstComplaints = modelComplaintRepository.GetPreviousComplaintNo(complaintNo);
+            List<COMPLAINT_SEARCH> lstComplaints = modelComplaintRepository.GetPreviousComplaintNo(complaintSearchQueryModel.ComplaintNo);
             return Ok(lstComplaints);
         }
 

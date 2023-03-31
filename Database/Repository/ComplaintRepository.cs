@@ -1,4 +1,6 @@
-﻿using CallCenterCoreAPI.Models.QueryModel;
+﻿using CallCenterCoreAPI.ExternalAPI.TextSmsAPI;
+using CallCenterCoreAPI.Models;
+using CallCenterCoreAPI.Models.QueryModel;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -19,7 +21,7 @@ namespace CallCenterCoreAPI.Database.Repository
         /// </summary>
         /// <param name="modelComplaint"></param>
         /// <returns></returns>
-        public int SaveComplaint(COMPLAINT modelComplaint)
+        public async Task<int> SaveComplaint(COMPLAINT modelComplaint)
         {
             int retStatus = 0;
             string retMsg = String.Empty; ;
@@ -73,6 +75,21 @@ namespace CallCenterCoreAPI.Database.Repository
 
                 if (param[23].Value != DBNull.Value)// status
                     retStatus = Convert.ToInt32(param[23].Value);
+                if (retStatus > 0 && modelComplaint.MOBILE_NO.Length == 10)
+                {
+                    _logger.LogInformation(modelComplaint.MOBILE_NO.ToString());
+                    ModelSmsAPI modelSmsAPI = new ModelSmsAPI();
+                    modelSmsAPI.To = "91" + modelComplaint.MOBILE_NO.ToString();
+                    modelSmsAPI.Smstext = "Dear Consumer,Your Complaint has been registered with complaint No. " + retStatus + " on Date: " + DateTime.Now.ToString("dd-MMM-yyyy") + " AVVNL";
+
+                    TextSmsAPI textSmsAPI = new TextSmsAPI();
+                    string response = await textSmsAPI.RegisterComplaintSMS(modelSmsAPI);
+                    modelComplaint.SMS = modelSmsAPI.Smstext;
+                    _logger.LogInformation(response.ToString());
+
+                    PUSH_SMS_DETAIL_Consumer(modelComplaint, response);
+
+                }
                 else
                     retStatus = 0;
             }
@@ -93,10 +110,10 @@ namespace CallCenterCoreAPI.Database.Repository
         /// <returns></returns>
         public DataSet SearchComplaint(string kno)
         {
-            DataSet ds= new DataSet();
+            DataSet ds = new DataSet();
             try
             {
-                SqlParameter[] param ={new SqlParameter("@kno",kno)};
+                SqlParameter[] param = { new SqlParameter("@kno", kno) };
                 ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "Search_Complaint", param);
             }
             catch (Exception ex)
@@ -277,6 +294,32 @@ namespace CallCenterCoreAPI.Database.Repository
             return (obj);
         }
         #endregion
+
+
+        public int PUSH_SMS_DETAIL_Consumer(COMPLAINT modelRemark, string response)
+        {
+            int retStatus = 0;
+            string retMsg = String.Empty; ;
+            COMPLAINT obj = new COMPLAINT();
+            obj = modelRemark;
+            SqlParameter[] param =
+                {
+                new SqlParameter("@PHONE_NO",modelRemark.MOBILE_NO),
+                new SqlParameter("@TEXT_MEESAGE",modelRemark.SMS),
+                new SqlParameter("@DELIVERY_RESPONSE",response),
+                new SqlParameter("@REMARK","SMS SENT")};
+            try
+            {
+                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "PUSH_SMS_DETAIL", param);
+            }
+            catch (Exception ex)
+            {
+                retStatus = -1;
+            }
+
+            return retStatus;
+
+        }
 
     }
 }
