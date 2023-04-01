@@ -46,7 +46,25 @@ namespace CallCenterCoreAPI.Database.Repository
             return userViewModelReturn;
         }
 
-       
+        public UserViewAPIModel ValidateUserAPI(UserRequestQueryModel user)
+        {
+            List<UserViewAPIModel> userViewModel = new List<UserViewAPIModel>();
+            UserViewAPIModel userViewModelReturn = new UserViewAPIModel();
+            try
+            {
+                SqlParameter[] param = { new SqlParameter("@Username", user.LoginId.Trim()), new SqlParameter("@Password", Utility.EncryptText(user.Password.Trim())) };
+                DataSet dataSet = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "Validate_User_API", param);
+                userViewModel = AppSettingsHelper.ToListof<UserViewAPIModel>(dataSet.Tables[0]);
+                userViewModelReturn = userViewModel[0];
+                _logger.LogInformation(conn);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+            }
+            return userViewModelReturn;
+        }
 
 
 

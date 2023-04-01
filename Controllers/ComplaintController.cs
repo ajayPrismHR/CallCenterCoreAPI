@@ -6,7 +6,7 @@ using System.Data;
 
 namespace CallCenterCoreAPI.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ComplaintController : ControllerBase

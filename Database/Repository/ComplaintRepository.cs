@@ -84,10 +84,10 @@ namespace CallCenterCoreAPI.Database.Repository
 
                     TextSmsAPI textSmsAPI = new TextSmsAPI();
                     string response = await textSmsAPI.RegisterComplaintSMS(modelSmsAPI);
-                    modelComplaint.SMS = modelSmsAPI.Smstext;
+                    //modelComplaint.SMS = modelSmsAPI.Smstext;
                     _logger.LogInformation(response.ToString());
 
-                    PUSH_SMS_DETAIL_Consumer(modelComplaint, response);
+                    PUSH_SMS_DETAIL_Consumer(modelComplaint, response, modelSmsAPI.Smstext);
 
                 }
                 else
@@ -296,7 +296,7 @@ namespace CallCenterCoreAPI.Database.Repository
         #endregion
 
 
-        public int PUSH_SMS_DETAIL_Consumer(COMPLAINT modelRemark, string response)
+        public int PUSH_SMS_DETAIL_Consumer(COMPLAINT modelRemark, string response,string SMS)
         {
             int retStatus = 0;
             string retMsg = String.Empty; ;
@@ -305,7 +305,7 @@ namespace CallCenterCoreAPI.Database.Repository
             SqlParameter[] param =
                 {
                 new SqlParameter("@PHONE_NO",modelRemark.MOBILE_NO),
-                new SqlParameter("@TEXT_MEESAGE",modelRemark.SMS),
+                new SqlParameter("@TEXT_MEESAGE",SMS),
                 new SqlParameter("@DELIVERY_RESPONSE",response),
                 new SqlParameter("@REMARK","SMS SENT")};
             try

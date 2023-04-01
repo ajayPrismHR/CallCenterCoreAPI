@@ -44,7 +44,6 @@ namespace CallCenterCoreAPI.Models.QueryModel
         public string AREA_CODE { get; set; }
         public string REMARKS { get; set; }
         public int UserId { get; set; }
-        public string SMS { get; set; }
     }
 
     public class COMPLAINT_SEARCH
