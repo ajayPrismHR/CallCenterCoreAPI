@@ -158,6 +158,7 @@ namespace CallCenterCoreAPI.Database.Repository
                         ALTERNATE_MOBILE_NO = Convert.ToString(dr["ALTERNATE_MOBILE_NO"]),
                         source = Convert.ToString(dr["SOURCE_NAME"]),
                         ADDRESS = Convert.ToString(dr["ADDRESS"]),
+                        Complaint_Status = Convert.ToString(dr["COMPLAINT_status"]),
 
                     }
                     );
@@ -200,7 +201,7 @@ namespace CallCenterCoreAPI.Database.Repository
                         ALTERNATE_MOBILE_NO = Convert.ToString(dr["ALTERNATE_MOBILE_NO"]),
                         source = Convert.ToString(dr["SOURCE_NAME"]),
                         ADDRESS = Convert.ToString(dr["ADDRESS"]),
-
+                        Complaint_Status = Convert.ToString(dr["COMPLAINT_status"]),
                     }
                     );
             }

@@ -59,6 +59,7 @@ namespace CallCenterCoreAPI.Models.QueryModel
         public string MOBILE_NO { get; set; }
         public string ALTERNATE_MOBILE_NO { get; set; }
         public string ADDRESS { get; set; }
+        public string Complaint_Status { get; set; }
 
     }
 
