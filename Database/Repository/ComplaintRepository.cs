@@ -3,6 +3,7 @@ using CallCenterCoreAPI.Models;
 using CallCenterCoreAPI.Models.QueryModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net;
 
 namespace CallCenterCoreAPI.Database.Repository
 {
@@ -320,6 +321,81 @@ namespace CallCenterCoreAPI.Database.Repository
 
             return retStatus;
 
+        }
+
+        public async Task<int> AddKNO(KNOMODEL KnoDetail)
+        {
+            int retStatus = 0;
+            SqlParameter parmretStatus = new SqlParameter();
+            parmretStatus.ParameterName = "@retStatus";
+            parmretStatus.DbType = DbType.Int32;
+            parmretStatus.Size = 8;
+            parmretStatus.Direction = ParameterDirection.Output;
+            SqlParameter[] param ={
+                    new SqlParameter("@USER_ID",KnoDetail.userid),
+                    new SqlParameter("@KNO",KnoDetail.kno),
+                    parmretStatus
+                    };
+            SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "Add_KNO", param);
+            if (param[2].Value != DBNull.Value)// status
+                retStatus = Convert.ToInt32(param[2].Value);
+            else
+                retStatus = 0;
+            return retStatus;
+        }
+
+        public List<KNOMODEL> ListKNO(long userid)
+        {
+            List<KNOMODEL> obj = new List<KNOMODEL>();
+            SqlParameter[] param ={
+                    new SqlParameter("@USER_ID",userid)};
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "ListKNO", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new KNOMODEL
+                    {
+                        userid = userid,
+                        kno = Convert.ToInt64(dr["KNO"]),
+                    }
+                    );
+            }
+            return (obj);
+        }
+
+        public async Task<int> UpdateDetail(ModelUser UserDetail)
+        {
+            int retStatus = 0;
+            try
+            {
+                SqlParameter parmretStatus = new SqlParameter();
+                parmretStatus.ParameterName = "@retStatus";
+                parmretStatus.DbType = DbType.Int32;
+                parmretStatus.Size = 8;
+                parmretStatus.Direction = ParameterDirection.Output;
+                long uid = Convert.ToInt64(UserDetail.User_id);
+                SqlParameter[] param ={
+                    new SqlParameter("@User_ID",uid),
+                    new SqlParameter("@Name",UserDetail.Name),
+                    new SqlParameter("@Address",UserDetail.Address),
+                    new SqlParameter("@Email",UserDetail.Email),
+                    new SqlParameter("@Phone",Convert.ToInt64(UserDetail.Mobile_NO)),
+                    parmretStatus
+                    };
+
+                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "UpdateUsers", param);
+                if (param[5].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt32(param[5].Value);
+                else
+                    retStatus = 0;
+            }
+            catch (Exception ex)
+            {
+                retStatus = -1;
+            }
+            return retStatus;
         }
 
     }

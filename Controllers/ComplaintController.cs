@@ -105,5 +105,42 @@ namespace CallCenterCoreAPI.Controllers
             return Ok(obj);
         }
 
+        [HttpPost]
+        [Route("Add_KNO")]
+        public async Task<IActionResult> Add_KNO(KNOMODEL KnoDetail)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            int retStatus = await modelComplaintRepository.AddKNO(KnoDetail);
+            if (retStatus > 0)
+                return Ok("Kno Has been added Successfully");
+            else
+                return BadRequest("Error in Saving Complaint");
+
+        }
+        [HttpGet]
+        [Route("ListKNO")]
+        public IActionResult ListKNO(KNOMODEL KnoDetail)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+
+            List<KNOMODEL> obj;
+            obj = modelComplaintRepository.ListKNO(KnoDetail.userid);
+            return Ok(obj);
+        }
+        [HttpPost]
+        [Route("UpdateDetail")]
+        public async Task<IActionResult> UpdateDetail(ModelUser UserDetail)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            int retStatus = await modelComplaintRepository.UpdateDetail(UserDetail);
+            if (retStatus > 0)
+                return Ok("Complaint Successfully Registered With Complaint No. " + retStatus.ToString());
+            else
+                return BadRequest("Error in Saving Complaint");
+
+        }
     }
 }
