@@ -398,5 +398,31 @@ namespace CallCenterCoreAPI.Database.Repository
             return retStatus;
         }
 
+        public List<ModelUser> GetDetail(long userid)
+        {
+            List<ModelUser> obj = new List<ModelUser>();
+            SqlParameter[] param ={
+                    new SqlParameter("@USER_ID",userid)};
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "GetUsers", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new ModelUser
+                    {
+                        User_id = Convert.ToInt32(dr["USER_ID"]),
+                        User_Name = Convert.ToString(dr["USER_NAME"]),
+                        Name = Convert.ToString(dr["NAME"]),
+                        Role = Convert.ToString(dr["ROLE_NAME"]),
+                        Mobile_NO = Convert.ToInt64(dr["MOBILE_NO"]),
+                        Email = Convert.ToString(dr["EMAIL_ID"]),
+                        Address = Convert.ToString(dr["ADDRESS"]),
+                    }
+                    );
+            }
+            return (obj);
+        }
+
     }
 }

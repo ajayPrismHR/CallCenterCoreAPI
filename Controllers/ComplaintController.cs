@@ -142,5 +142,18 @@ namespace CallCenterCoreAPI.Controllers
                 return BadRequest("Error in Saving Complaint");
 
         }
+        [HttpGet]
+        [Route("GetDetail")]
+        public IActionResult GetDetail(KNOMODEL UserDetail)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+
+            List<ModelUser> obj;
+            obj = modelComplaintRepository.GetDetail(UserDetail.userid);
+            return Ok(obj);
+        }
+
     }
+    
 }
