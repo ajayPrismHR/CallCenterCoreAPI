@@ -179,6 +179,18 @@ namespace CallCenterCoreAPI.Controllers
             return Ok(obj);
         }
 
+        [HttpPost]
+        [Route("GetKNODetail")]
+        public IActionResult GetKNODetail(KNOMODEL UserDetail)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+
+            List<COMPLAINT> obj;
+            obj = modelComplaintRepository.GetKNODetailS(UserDetail.kno);
+            return Ok(obj);
+        }
+
     }
     
 }

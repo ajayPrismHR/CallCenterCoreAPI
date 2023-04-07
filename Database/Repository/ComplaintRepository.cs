@@ -424,5 +424,39 @@ namespace CallCenterCoreAPI.Database.Repository
             return (obj);
         }
 
+        public List<COMPLAINT> GetKNODetailS(long KNO)
+        {
+            List<COMPLAINT> obj = new List<COMPLAINT>();
+            SqlParameter[] param ={
+                    new SqlParameter("@KNO",KNO)};
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "GetKnoDetails", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new COMPLAINT
+                    {
+                        OFFICE_CODE = Convert.ToInt32(dr["OFFICE_CODE"]),
+                        NAME = Convert.ToString(dr["Name"]),
+                        FATHER_NAME = Convert.ToString(dr["FatherName"]),
+                        KNO = Convert.ToString(dr["KNO"]),
+                        MOBILE_NO = Convert.ToString(dr["MOBILE_NO"]),
+                        LANDLINE_NO = Convert.ToString(dr["LANDLINENO"]),
+                        EMAIL = Convert.ToString(dr["EMAIL_ADDRESS"]),
+                        ACCOUNT_NO = Convert.ToString(dr["ACCOUNT_NO"]),
+                        ADDRESS1 = Convert.ToString(dr["ADDRESS1"]),
+                        ADDRESS2 = Convert.ToString(dr["ADDRESS2"]),
+                        ADDRESS3 = Convert.ToString(dr["ADDRESS3"]),
+                        LANDMARK = Convert.ToString(dr["LANDMARK"]),
+                        CONSUMER_STATUS = Convert.ToString(dr["SERVICE_STATUS"]),
+                        FEEDER_NAME = Convert.ToString(dr["FEEDER_NAME"]),
+                        AREA_CODE = Convert.ToString(dr["AREA_CODE"]),
+                    }
+                    );
+            }
+            return (obj);
+        }
+
     }
 }
