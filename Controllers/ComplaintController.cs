@@ -35,8 +35,9 @@ namespace CallCenterCoreAPI.Controllers
                 if (Convert.ToInt16(dsResponse.Tables[0].Rows[0]["COMPLAINT_status"].ToString()) != 2)
                 {
                     _logger.LogInformation("You Already Have Complaint No." + dsResponse.Tables[0].Rows[0]["COMPLAINT_NO"].ToString() + " with Status " + dsResponse.Tables[0].Rows[0]["cst"]);
+                    returnStatus.response = 0;
                     returnStatus.status = "You Already Have Complaint No. " + dsResponse.Tables[0].Rows[0]["COMPLAINT_NO"].ToString() + " with Status " + dsResponse.Tables[0].Rows[0]["cst"];
-                    return BadRequest(returnStatus.status);
+                    return BadRequest(returnStatus);
                 }
             }
             else
@@ -45,14 +46,16 @@ namespace CallCenterCoreAPI.Controllers
             }
             if (retStatus > 0)
             {
+                returnStatus.response = 1;
                 returnStatus.status = "Complaint Successfully Registered With Complaint No. " + retStatus.ToString();
-                return Ok(returnStatus.status);
+                return Ok(returnStatus);
             }
                 
             else
             {
+                returnStatus.response = 0;
                 returnStatus.status = "Error in Saving Complaint";
-                return BadRequest(returnStatus.status);
+                return BadRequest(returnStatus);
             }
                 
            
@@ -123,16 +126,24 @@ namespace CallCenterCoreAPI.Controllers
             ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
             ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
             int retStatus = await modelComplaintRepository.AddKNO(KnoDetail);
-            if (retStatus > 0)
+            if (retStatus ==1)
             {
+                returnStatus.response = 1;
                 returnStatus.status = "Kno Has been added Successfully";
-                return Ok(returnStatus.status);
+                return Ok(returnStatus);
+            }
+            else if (retStatus == 2)
+            {
+                returnStatus.response = 1;
+                returnStatus.status = "Invalid Kno";
+                return Ok(returnStatus);
             }
 
             else
             {
+                returnStatus.response = 0;
                 returnStatus.status = "Error in Adding Kno or KNo Aready mapped with another User";
-                return BadRequest(returnStatus.status);
+                return BadRequest(returnStatus);
             }
 
         }
@@ -157,14 +168,16 @@ namespace CallCenterCoreAPI.Controllers
             int retStatus = await modelComplaintRepository.UpdateDetail(UserDetail);
             if (retStatus > 0)
             {
+                returnStatus.response = 1;
                 returnStatus.status = "Detail Updated Successfully";
-                return Ok(returnStatus.status);
+                return Ok(returnStatus);
             }
 
             else
             {
+                returnStatus.response = 0;
                 returnStatus.status = "Error in Updating Details";
-                return BadRequest(returnStatus.status);
+                return BadRequest(returnStatus);
             }
 
         }
