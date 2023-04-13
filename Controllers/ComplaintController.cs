@@ -204,6 +204,42 @@ namespace CallCenterCoreAPI.Controllers
             obj = modelComplaintRepository.GetKNODetailS(UserDetail.kno);
             return Ok(obj);
         }
+        [HttpPost]
+        [Route("GetFRTWiseComplaint")]
+        public IActionResult GetFRTWiseComplaint(FRTWiseComplaintModel frtWiseComplaintModel)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            List<COMPLAINT_SEARCH> lstComplaints = modelComplaintRepository.GetPendingComplaintFRTWise(frtWiseComplaintModel.OfficeId);
+            return Ok(lstComplaints);
+        }
+
+        [HttpPost]
+        [Route("SaveRemark")]
+        public async Task<IActionResult> SaveRemark(RemarkModel modelRemark)
+        {
+            ReturnStatusModel returnStatus = new ReturnStatusModel();
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            Int64 retStatus = 0;
+            string msg = string.Empty;
+            retStatus = await modelComplaintRepository.SaveRemark(modelRemark);
+            if (retStatus > 0)
+            {
+                returnStatus.response = 1;
+                returnStatus.status = "Remark has been saved";
+                return Ok(returnStatus);
+            }
+
+            else
+            {
+                returnStatus.response = 0;
+                returnStatus.status = "Error in Saving Remark";
+                return BadRequest(returnStatus);
+            }
+
+
+        }
 
     }
     

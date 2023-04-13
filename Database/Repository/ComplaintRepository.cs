@@ -103,6 +103,59 @@ namespace CallCenterCoreAPI.Database.Repository
         }
         #endregion
 
+        #region SaveRemark
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="modelComplaint"></param>
+        /// <returns></returns>
+        public async Task<Int64> SaveRemark(RemarkModel modelRemark)
+        {
+            Int64 retStatus = 0;
+            string retMsg = String.Empty; ;
+            RemarkModel obj = new RemarkModel();
+            obj = modelRemark;
+
+            SqlParameter parmretStatus = new SqlParameter();
+            parmretStatus.ParameterName = "@retStatus";
+            parmretStatus.DbType = DbType.Int32;
+            parmretStatus.Size = 8;
+            parmretStatus.Direction = ParameterDirection.Output;
+
+            SqlParameter parmretMsg = new SqlParameter();
+            parmretMsg.ParameterName = "@retMsg";
+            parmretMsg.DbType = DbType.String;
+            parmretMsg.Size = 8;
+            parmretMsg.Direction = ParameterDirection.Output;
+
+            SqlParameter[] param ={
+                new SqlParameter("@COMPLAINT_NO",modelRemark.ComplaintNo),
+                    new SqlParameter("@REMARK",modelRemark.Remark),
+                    new SqlParameter("@USER_ID",modelRemark.UserID),
+                    parmretStatus,parmretMsg};
+
+
+            try
+            {
+                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "SAVE_REMARK", param);
+
+                if (param[3].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt32(param[3].Value);
+                else
+                    retStatus = 0;
+            }
+            catch (Exception ex)
+            {
+                retStatus = -1;
+            }
+
+
+
+            return retStatus;
+
+        }
+        #endregion
+
         #region SearchComplaint
         /// <summary>
         /// Save Complaint
@@ -138,6 +191,49 @@ namespace CallCenterCoreAPI.Database.Repository
                     new SqlParameter("@KNO",Kno) };
 
             DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "SearchComplaintByKNo", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new COMPLAINT_SEARCH
+                    {
+                        //Consumer Info
+                        //SDO_CODE = Convert.ToString(dr["SDO_CODE"]),
+
+                        OFFICE_CODE = Convert.ToInt64(dr["OFFICE_CODE"]),
+                        ComplaintType = Convert.ToString(dr["COMPLAINT_TYPE"]),
+                        ComplaintNo = Convert.ToString(dr["COMPLAINT_NO"]),
+                        NAME = Convert.ToString(dr["NAME"]),
+                        FATHER_NAME = Convert.ToString(dr["FATHER_NAME"]),
+                        KNO = Convert.ToString(dr["KNO"]),
+                        LANDLINE_NO = Convert.ToString(dr["LANDLINE_NO"]),
+                        MOBILE_NO = Convert.ToString(dr["MOBILE_NO"]),
+                        ALTERNATE_MOBILE_NO = Convert.ToString(dr["ALTERNATE_MOBILE_NO"]),
+                        source = Convert.ToString(dr["SOURCE_NAME"]),
+                        ADDRESS = Convert.ToString(dr["ADDRESS"]),
+                        Complaint_Status = Convert.ToString(dr["COMPLAINT_status"]),
+
+                    }
+                    );
+            }
+            return (obj);
+        }
+        #endregion
+
+        #region GetPendingComplaintFRTWise
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="Kno"></param>
+        /// <returns></returns>
+        public List<COMPLAINT_SEARCH> GetPendingComplaintFRTWise(string offcieID)
+        {
+            List<COMPLAINT_SEARCH> obj = new List<COMPLAINT_SEARCH>();
+            SqlParameter[] param ={
+                    new SqlParameter("@offcieID",offcieID) };
+
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "SearchComplaintByFTR", param);
             //Bind Complaint generic list using dataRow     
             foreach (DataRow dr in ds.Tables[0].Rows)
             {
