@@ -1,4 +1,5 @@
 ﻿using CallCenterCoreAPI.Database.Repository;
+using CallCenterCoreAPI.Models;
 using CallCenterCoreAPI.Models.QueryModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -236,6 +237,34 @@ namespace CallCenterCoreAPI.Controllers
                 returnStatus.response = 0;
                 returnStatus.status = "Error in Saving Remark";
                 return BadRequest(returnStatus);
+            }
+
+
+        }
+
+        [HttpPost]
+        [Route("SendSms")]
+        public async Task<IActionResult> SendSms(SMSModel smsmodel)
+        {
+            ReturnStatusModel returnStatus = new ReturnStatusModel();
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            string retStatus = "0";
+            string msg = string.Empty;
+            retStatus = await modelComplaintRepository.SendSmsRep(smsmodel);
+            if (retStatus == "0")
+            {
+                returnStatus.response = 0;
+                returnStatus.status = "Error in Sending SMS";
+                return BadRequest(returnStatus);
+                
+            }
+
+            else
+            {
+                returnStatus.response = 1;
+                returnStatus.status = retStatus;
+                return Ok(returnStatus);
             }
 
 

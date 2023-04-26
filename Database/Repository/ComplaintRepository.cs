@@ -1,4 +1,5 @@
-﻿using CallCenterCoreAPI.ExternalAPI.TextSmsAPI;
+﻿using Azure;
+using CallCenterCoreAPI.ExternalAPI.TextSmsAPI;
 using CallCenterCoreAPI.Models;
 using CallCenterCoreAPI.Models.QueryModel;
 using System.Data;
@@ -98,6 +99,39 @@ namespace CallCenterCoreAPI.Database.Repository
             {
                 retStatus = -1;
             }
+            return retStatus;
+
+        }
+        #endregion
+
+        #region SendSmsRep
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="modelComplaint"></param>
+        /// <returns></returns>
+        public async Task<string> SendSmsRep(SMSModel smsmodel)
+        {
+            string retStatus = "0";
+            _logger.LogInformation(smsmodel.to.ToString());
+            ModelSmsAPI modelSmsAPI = new ModelSmsAPI();
+            modelSmsAPI.To = "91" + smsmodel.to.ToString();
+            modelSmsAPI.Smstext = smsmodel.smsText;
+            try
+            {
+                TextSmsAPI textSmsAPI = new TextSmsAPI();
+                string response = await textSmsAPI.RegisterComplaintSMS(modelSmsAPI);
+                //modelComplaint.SMS = modelSmsAPI.Smstext;
+                _logger.LogInformation(response.ToString());
+
+                UPDATE_SMS_DETAIL_Consumer(response, smsmodel.id);
+                retStatus = response;
+            }
+            catch
+            {
+                retStatus = "0";
+            }
+
             return retStatus;
 
         }
@@ -409,6 +443,27 @@ namespace CallCenterCoreAPI.Database.Repository
             try
             {
                 SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "PUSH_SMS_DETAIL", param);
+            }
+            catch (Exception ex)
+            {
+                retStatus = -1;
+            }
+
+            return retStatus;
+
+        }
+
+        public int UPDATE_SMS_DETAIL_Consumer(string response, string id)
+        {
+            int retStatus = 0;
+            string retMsg = String.Empty; ;
+            SqlParameter[] param =
+                {
+                new SqlParameter("@id",id),
+                new SqlParameter("@DELIVERY_RESPONSE",response)};
+            try
+            {
+                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "UPDATE_SMS_DETAIL", param);
             }
             catch (Exception ex)
             {
