@@ -243,6 +243,35 @@ namespace CallCenterCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("CallDetails")]
+        public async Task<IActionResult> CallDetails(CallDetailModel modelRemark)
+        {
+            ReturnStatusModel returnStatus = new ReturnStatusModel();
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            Int64 retStatus = 0;
+            string msg = string.Empty;
+            retStatus = await modelComplaintRepository.SaveCallDetail(modelRemark);
+            if (retStatus > 0)
+            {
+                returnStatus.response = 1;
+                returnStatus.status = "Detail has been saved";
+                return Ok(returnStatus);
+            }
+
+            else
+            {
+                returnStatus.response = 0;
+                returnStatus.status = "Error in Saving Detail";
+                return BadRequest(returnStatus);
+            }
+
+
+        }
+
+
+
+        [HttpPost]
         [Route("SendSms")]
         public async Task<IActionResult> SendSms(SMSModel smsmodel)
         {

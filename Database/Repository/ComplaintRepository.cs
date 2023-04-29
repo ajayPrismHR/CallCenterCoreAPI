@@ -190,6 +190,68 @@ namespace CallCenterCoreAPI.Database.Repository
         }
         #endregion
 
+        #region SaveCallDetail
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="modelComplaint"></param>
+        /// <returns></returns>
+        public async Task<Int64> SaveCallDetail(CallDetailModel modelRemark)
+        {
+            Int64 retStatus = 0;
+            string retMsg = String.Empty; ;
+            CallDetailModel obj = new CallDetailModel();
+            obj = modelRemark;
+
+            SqlParameter parmretStatus = new SqlParameter();
+            parmretStatus.ParameterName = "@retStatus";
+            parmretStatus.DbType = DbType.Int32;
+            parmretStatus.Size = 8;
+            parmretStatus.Direction = ParameterDirection.Output;
+
+            SqlParameter parmretMsg = new SqlParameter();
+            parmretMsg.ParameterName = "@retMsg";
+            parmretMsg.DbType = DbType.String;
+            parmretMsg.Size = 8;
+            parmretMsg.Direction = ParameterDirection.Output;
+
+            SqlParameter[] param ={
+                new SqlParameter("@Date",modelRemark.date),
+                    new SqlParameter("@Total_Calls_Offered",modelRemark.Total_Calls_Offered),
+                    new SqlParameter("@Total_Calls_Answered",modelRemark.Total_Calls_Answered),
+                    new SqlParameter("@Calls_Answered_within_60_Sec",modelRemark.Calls_Answered_within_60_Sec),
+                    new SqlParameter("@Calls_Answered_After_60_Sec",modelRemark.Calls_Answered_After_60_Sec),
+                    new SqlParameter("@Percent_Calls_Attended_within_60_Second",modelRemark.Percent_Calls_Attended_within_60_Sec),
+                    new SqlParameter("@Percent_Calls_Attended_After_60_Second",modelRemark.Percent_Calls_Attended_After_60_Sec),
+                    new SqlParameter("@Calls_Abandon",modelRemark.Calls_Abandon),
+                    new SqlParameter("@Call_Abandon_Percentage",modelRemark.Call_Abandon_Percentage),
+                    new SqlParameter("@Calls_Abandon_within_60_Sec",modelRemark.Calls_Abandon_within_60_Sec),
+                    new SqlParameter("@Total_Call_Wait_Time",modelRemark.Total_Call_Wait_Time),
+                    new SqlParameter("@Call_Wait_Time_more_than_60_Sec",modelRemark.Call_Wait_Time_more_than_60_Sec),
+                    parmretStatus,parmretMsg};
+
+
+            try
+            {
+                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "SAVE_CALL", param);
+
+                if (param[12].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt32(param[12].Value);
+                else
+                    retStatus = 0;
+            }
+            catch (Exception ex)
+            {
+                retStatus = -1;
+            }
+
+
+
+            return retStatus;
+
+        }
+        #endregion
+
         #region SearchComplaint
         /// <summary>
         /// Save Complaint
