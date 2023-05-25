@@ -38,7 +38,7 @@ namespace CallCenterCoreAPI.Controllers
             UserViewModel userViewModels = new UserViewModel();
            
             userViewModels = modelLoginRepository.ValidateUser(modelUser);
-            if (!string.IsNullOrEmpty(userViewModels.Emp_Name))
+            if (!string.IsNullOrEmpty(userViewModels.USER_NAME))
             {
                 double expiryMins= string.IsNullOrEmpty(_configuration["Jwt:TokenValidityInMinutes"]) ? 5 : Convert.ToDouble(_configuration["Jwt:TokenValidityInMinutes"]);
                 var claims = new[] {
@@ -46,7 +46,7 @@ namespace CallCenterCoreAPI.Controllers
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                         new Claim("ID", userViewModels.ID.ToString()),
-                        new Claim("Emp_Name", userViewModels.Emp_Name),
+                        new Claim("USER_NAME", userViewModels.USER_NAME),
                         new Claim("NAME", userViewModels.NAME),
                     };
 
@@ -107,46 +107,6 @@ namespace CallCenterCoreAPI.Controllers
 
                 return NotFound(-1);
             }
-        }
-
-        [HttpPost]
-        [Route("ChangePassword")]
-        public async Task<IActionResult> ChangePassword(UserRequestQueryModel User)
-        {
-            ReturnStatusModel returnStatus = new ReturnStatusModel();
-            ILogger<LoginRepository> modelLogger = _loggerFactory.CreateLogger<LoginRepository>();
-            LoginRepository modelLoginRepository = new LoginRepository(modelLogger);
-            UserViewAPIModel userViewModels = new UserViewAPIModel();
-
-            int retStatus = await modelLoginRepository.ChangePassword(User);
-            if (retStatus == 1)
-            {
-                returnStatus.response = 1;
-                returnStatus.status = "Password Changed Successfully";
-                return Ok(returnStatus);
-            }
-            else
-            {
-                returnStatus.response = 0;
-                returnStatus.status = "Password Not Changed";
-                return Ok(returnStatus);
-            }
-        }
-
-        [HttpPost]
-        [Route("SignUP")]
-        public async Task<IActionResult> SignUP(EmpSignUP User)
-        {
-            ReturnStatusModel returnStatus = new ReturnStatusModel();
-            ILogger<LoginRepository> modelLogger = _loggerFactory.CreateLogger<LoginRepository>();
-            LoginRepository modelLoginRepository = new LoginRepository(modelLogger);
-            UserViewAPIModel userViewModels = new UserViewAPIModel();
-
-            string retStatus = await modelLoginRepository.SignUP(User);
-            returnStatus.response = 1;
-            returnStatus.status = retStatus;
-            return Ok(returnStatus);
-            
         }
 
     }

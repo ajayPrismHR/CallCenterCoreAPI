@@ -33,7 +33,7 @@ namespace CallCenterCoreAPI.Database.Repository
             try
             {
                 SqlParameter[] param ={new SqlParameter("@Username",user.LoginId.Trim()),new SqlParameter("@Password",Utility.EncryptText(user.Password.Trim()) )};
-                DataSet dataSet = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "Validate_User_API_LOGIN", param);
+                DataSet dataSet = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "Validate_User", param);
                 userViewModel = AppSettingsHelper.ToListof<UserViewModel>(dataSet.Tables[0]);
                 userViewModelReturn = userViewModel[0];
                 _logger.LogInformation(conn);
@@ -53,7 +53,7 @@ namespace CallCenterCoreAPI.Database.Repository
             try
             {
                 SqlParameter[] param = { new SqlParameter("@Username", user.LoginId.Trim()), new SqlParameter("@Password", Utility.EncryptText(user.Password.Trim())) };
-                DataSet dataSet = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "Validate_User_API_LOGIN", param);
+                DataSet dataSet = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "Validate_User_API", param);
                 userViewModel = AppSettingsHelper.ToListof<UserViewAPIModel>(dataSet.Tables[0]);
                 userViewModelReturn = userViewModel[0];
                 _logger.LogInformation(conn);
@@ -66,65 +66,7 @@ namespace CallCenterCoreAPI.Database.Repository
             return userViewModelReturn;
         }
 
-        public async Task<int> ChangePassword(UserRequestQueryModel User)
-        {
-            string msg = Utility.EncryptText(User.Password);
-            int retStatus = 0;
-            SqlParameter parmretStatus = new SqlParameter();
-            parmretStatus.ParameterName = "@retStatus";
-            parmretStatus.DbType = DbType.Int32;
-            parmretStatus.Size = 8;
-            parmretStatus.Direction = ParameterDirection.Output;
-            SqlParameter[] param ={
-                    new SqlParameter("@Emp_Name",User.LoginId),
-                    new SqlParameter("@PASSWORD",msg),
-                    parmretStatus
-                    };
-            SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "ChangePassword", param);
-            if (param[2].Value != DBNull.Value)// status
-                retStatus = Convert.ToInt32(param[2].Value);
-            else
-                retStatus = 2;
-            return retStatus;
-        }
 
-        public async Task<string> SignUP(EmpSignUP User)
-        {
-            string msg = Utility.EncryptText(User.PASSWORD);
-            string retStatus = "";
-            SqlParameter parmretStatus = new SqlParameter();
-            parmretStatus.ParameterName = "@RETSTATUS";
-            parmretStatus.DbType = DbType.Int32;
-            parmretStatus.Size = 8;
-            parmretStatus.Direction = ParameterDirection.Output;
-            SqlParameter parmretmsg = new SqlParameter();
-            parmretStatus.ParameterName = "@RETMSG";
-            parmretStatus.DbType = DbType.String;
-            parmretStatus.Size = 8;
-            parmretStatus.Direction = ParameterDirection.Output;
-            SqlParameter[] param ={
-                    new SqlParameter("@EMP_NAME",User.EMP_NAME),
-                    new SqlParameter("@PASSWORD",msg),
-                    new SqlParameter("@NAME",User.NAME),
-                    new SqlParameter("@ADDRESS",User.ADDRESS),
-                    new SqlParameter("@MOBILE_NO",User.MOBILE_NO),
-                    new SqlParameter("@PHOTO",User.PHOTO),
-                    new SqlParameter("@EMAIL",User.EMAIL),
-                    new SqlParameter("@ROLE_ID",User.ROLE_ID),
-                    new SqlParameter("@MANGERID",User.MANGERID),
-                    new SqlParameter("@OFFICE_ID",User.OFFICE_ID),
-                    new SqlParameter("@LATITUDE",User.LATITUDE),
-                    new SqlParameter("@LOGNITUDE",User.LOGNITUDE),
-                    new SqlParameter("@LOGIN_WITHIN_RANGE",User.LOGIN_WITHIN_RANGE),
-                    parmretStatus,parmretmsg
-                    };
-            SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "SIGN_UP", param);
-            if (param[13].Value != DBNull.Value)// status
-                retStatus = Convert.ToString(param[14].Value);
-            else
-                retStatus = "Error";
-            return retStatus;
-        }
 
     }
 
