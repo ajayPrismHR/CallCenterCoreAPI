@@ -216,6 +216,16 @@ namespace CallCenterCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("GetComplaintCurrentStatusList")]
+        public IActionResult GetFRTWiseComplaint()
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            List<ComplaintCurrentStatusList> lstComplaints = modelComplaintRepository.GetComplaintCurrentStatus_List();
+            return Ok(lstComplaints);
+        }
+
+        [HttpPost]
         [Route("SaveRemark")]
         public async Task<IActionResult> SaveRemark(RemarkModel modelRemark)
         {

@@ -209,15 +209,16 @@ namespace CallCenterCoreAPI.Database.Repository
                 new SqlParameter("@COMPLAINT_NO",modelRemark.ComplaintNo),
                     new SqlParameter("@REMARK",modelRemark.Remark),
                     new SqlParameter("@USER_ID",modelRemark.UserID),
+                    new SqlParameter("@status",modelRemark.status),
                     parmretStatus,parmretMsg};
 
 
             try
             {
-                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "SAVE_REMARK", param);
+                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "SAVE_REMARK_API", param);
 
-                if (param[3].Value != DBNull.Value)// status
-                    retStatus = Convert.ToInt32(param[3].Value);
+                if (param[4].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt32(param[4].Value);
                 else
                     retStatus = 0;
             }
@@ -474,6 +475,30 @@ namespace CallCenterCoreAPI.Database.Repository
                         source = Convert.ToString(dr["SOURCE_NAME"]),
                         ADDRESS = Convert.ToString(dr["ADDRESS"]),
                         Complaint_Status = Convert.ToString(dr["COMPLAINT_status"]),
+
+                    }
+                    );
+            }
+            return (obj);
+        }
+
+        public List<ComplaintCurrentStatusList> GetComplaintCurrentStatus_List()
+        {
+            List<ComplaintCurrentStatusList> obj = new List<ComplaintCurrentStatusList>();
+
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "GET_COMPLAINT_CURRENT_STATUS_LIST");
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new ComplaintCurrentStatusList
+                    {
+                        //Consumer Info
+                        //SDO_CODE = Convert.ToString(dr["SDO_CODE"]),
+
+                        ID = Convert.ToInt32(dr["ID"]),
+                        CURRENT_STATUS = Convert.ToString(dr["CURRENT_STATUS"]),
 
                     }
                     );
