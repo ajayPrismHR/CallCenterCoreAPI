@@ -33,7 +33,7 @@ namespace CallCenterCoreAPI.Database.Repository
             try
             {
                 SqlParameter[] param ={new SqlParameter("@Username",user.LoginId.Trim()),new SqlParameter("@Password",Utility.EncryptText(user.Password.Trim()) )};
-                DataSet dataSet = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "Validate_User", param);
+                DataSet dataSet = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "Validate_User_API_LOGIN", param);
                 userViewModel = AppSettingsHelper.ToListof<UserViewModel>(dataSet.Tables[0]);
                 userViewModelReturn = userViewModel[0];
                 _logger.LogInformation(conn);

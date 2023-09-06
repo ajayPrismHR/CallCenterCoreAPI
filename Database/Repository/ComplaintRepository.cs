@@ -75,8 +75,8 @@ namespace CallCenterCoreAPI.Database.Repository
             {
                 SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "COMPLAINTS_REGISTER_API", param);
 
-                if (param[22].Value != DBNull.Value)// status
-                    retStatus = Convert.ToInt64(param[22].Value);
+                if (param[20].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt64(param[20].Value);
                 if (retStatus > 0 && modelComplaint.MOBILE_NO.Length == 10)
                 {
                     _logger.LogInformation(modelComplaint.MOBILE_NO.ToString());
@@ -103,7 +103,50 @@ namespace CallCenterCoreAPI.Database.Repository
 
         }
         #endregion
+        #region CheckUser
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="modelComplaint"></param>
+        /// <returns></returns>
+        public async Task<Int64> CheckUser(CheckUserAvailableModel modelUser)
+        {
+            Int64 retStatus = 0;
+            string retMsg = String.Empty; ;
+            CheckUserAvailableModel obj = new CheckUserAvailableModel();
+            obj = modelUser;
 
+            SqlParameter parmretStatus = new SqlParameter();
+            parmretStatus.ParameterName = "@retStatus";
+            parmretStatus.DbType = DbType.Int32;
+            parmretStatus.Size = 8;
+            parmretStatus.Direction = ParameterDirection.Output;
+
+            SqlParameter[] param ={
+                new SqlParameter("@USER_NAME",modelUser.UserName),
+                    parmretStatus};
+
+
+            try
+            {
+                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "CheckUserAvailability", param);
+
+                if (param[1].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt32(param[1].Value);
+                else
+                    retStatus = 2;
+            }
+            catch (Exception ex)
+            {
+                retStatus = -1;
+            }
+
+
+
+            return retStatus;
+
+        }
+        #endregion
         #region SendSmsRep
         /// <summary>
         /// Save Complaint
@@ -217,6 +260,7 @@ namespace CallCenterCoreAPI.Database.Repository
 
             SqlParameter[] param ={
                 new SqlParameter("@Date",modelRemark.date),
+                new SqlParameter("@Date1",modelRemark.date),
                     new SqlParameter("@Total_Calls_Offered",modelRemark.Total_Calls_Offered),
                     new SqlParameter("@Total_Calls_Answered",modelRemark.Total_Calls_Answered),
                     new SqlParameter("@Calls_Answered_within_60_Sec",modelRemark.Calls_Answered_within_60_Sec),
@@ -228,15 +272,73 @@ namespace CallCenterCoreAPI.Database.Repository
                     new SqlParameter("@Calls_Abandon_within_60_Sec",modelRemark.Calls_Abandon_within_60_Sec),
                     new SqlParameter("@Total_Call_Wait_Time",modelRemark.Total_Call_Wait_Time),
                     new SqlParameter("@Call_Wait_Time_more_than_60_Sec",modelRemark.Call_Wait_Time_more_than_60_Sec),
+                    new SqlParameter("@Short_Calls",modelRemark.Short_Calls),
+                    new SqlParameter("@Ans_LessThan_5_Secs",modelRemark.Ans_LessThan_5_Secs),
+                    new SqlParameter("@Ans_6to10_Secs",modelRemark.Ans_6to10_Secs),
+                    new SqlParameter("@Ans_11to20_Secs",modelRemark.Ans_11to20_Secs),
+                    new SqlParameter("@Ans_21to30_Secs",modelRemark.Ans_21to30_Secs),
+                    new SqlParameter("@Ans_31to40_Secs",modelRemark.Ans_31to40_Secs),
+                    new SqlParameter("@Ans_41to50_Secs",modelRemark.Ans_41to50_Secs),
+                    new SqlParameter("@Ans_51to60_Secs",modelRemark.Ans_51to60_Secs),
+                    new SqlParameter("@Ans_GreaterThan_60_Secs",modelRemark.Ans_GreaterThan_60_Secs),
+                    new SqlParameter("@Total_Calls_Abandon",modelRemark.Total_Calls_Abandon),
+                    new SqlParameter("@Aban_LessThan5_Sec",modelRemark.Aban_LessThan5_Sec),
+                    new SqlParameter("@Aban_6to10_Secs",modelRemark.Aban_6to10_Secs),
+                    new SqlParameter("@Aban_11to20_Secs",modelRemark.Aban_11to20_Secs),
+                    new SqlParameter("@Aban_21to30_Secs",modelRemark.Aban_21to30_Secs),
+                    new SqlParameter("@Aban_31to40_Secs",modelRemark.Aban_31to40_Secs),
+                    new SqlParameter("@Aban_41to50_Secs",modelRemark.Aban_41to50_Secs),
+                    new SqlParameter("@Aban_51to60_Secs",modelRemark.Aban_51to60_Secs),
+                    new SqlParameter("@Aban_GreaterThan_60_Secs",modelRemark.Aban_GreaterThan_60_Secs),
+                    new SqlParameter("@Failed",modelRemark.Failed),
+                    new SqlParameter("@Total_Call_Handling_Time",modelRemark.Total_Call_Handling_Time),
+                    new SqlParameter("@Total_Talk_Time",modelRemark.Total_Talk_Time),
+                    new SqlParameter("@Average_Talk_Time",modelRemark.Average_Talk_Time),
+                    new SqlParameter("@Average_Call_Handling_Time",modelRemark.Average_Call_Handling_Time),
+                    new SqlParameter("@Calls_Held",modelRemark.Calls_Held),
+                    new SqlParameter("@Calls_Queued",modelRemark.Calls_Queued),
+                    new SqlParameter("@Calls_Queue_Time",modelRemark.Calls_Queue_Time),
+                    new SqlParameter("@Avg_Queue_Time",modelRemark.Avg_Queue_Time),
+                    new SqlParameter("@Service_per",modelRemark.Service_per),
+                    new SqlParameter("@Aban_Per",modelRemark.Aban_Per),
+                    new SqlParameter("@SLA_Per",modelRemark.SLA_Per),
+                    new SqlParameter("@ABN_10_Sec",modelRemark.ABN_10_Sec),
+                    new SqlParameter("@ABN_10_Sec_Per",modelRemark.ABN_10_Sec_Per),
+                    new SqlParameter("@ABN_20_Sec",modelRemark.ABN_20_Sec),
+                    new SqlParameter("@ABN_20_Sec_Per",modelRemark.ABN_20_Sec_Per),
+                    new SqlParameter("@ABN_30_Sec",modelRemark.ABN_30_Sec),
+                    new SqlParameter("@ABN_30_Sec_Per",modelRemark.ABN_30_Sec_Per),
+                    new SqlParameter("@ABN_60_Sec",modelRemark.ABN_60_Sec),
+                    new SqlParameter("@ABN_60_Sec_Per",modelRemark.ABN_60_Sec_Per),
+                    new SqlParameter("@ABN_90_Sec",modelRemark.ABN_90_Sec),
+                    new SqlParameter("@ABN_90_Sec_Per",modelRemark.ABN_90_Sec_Per),
+                    new SqlParameter("@SLA_10_Sec",modelRemark.SLA_10_Sec),
+                    new SqlParameter("@SLA_10_Sec_Per",modelRemark.SLA_10_Sec_Per),
+                    new SqlParameter("@SLA_20_Sec",modelRemark.SLA_20_Sec),
+                    new SqlParameter("@SLA_20_Sec_Per",modelRemark.SLA_20_Sec_Per),
+                    new SqlParameter("@SLA_30_Sec",modelRemark.SLA_30_Sec),
+                    new SqlParameter("@SLA_30_Sec_Per",modelRemark.SLA_30_Sec_Per),
+                    new SqlParameter("@SLA_60_Sec",modelRemark.SLA_60_Sec),
+                    new SqlParameter("@SLA_60_Sec_Per",modelRemark.SLA_60_Sec_Per),
+                    new SqlParameter("@SLA_90_Sec",modelRemark.SLA_90_Sec),
+                    new SqlParameter("@SLA_90_Sec_Per",modelRemark.SLA_90_Sec_Per),
+                    new SqlParameter("@Total_Hold_Time",modelRemark.Total_Hold_Time),
+                    new SqlParameter("@Avg_Hold_Time_of_Ans",modelRemark.Avg_Hold_Time_of_Ans),
+                    new SqlParameter("@Total_Wrapup_Time",modelRemark.Total_Wrapup_Time),
+                    new SqlParameter("@Avg_Wrapup_Time",modelRemark.Avg_Wrapup_Time),
+                    //new SqlParameter("@Call_Type",modelRemark.Call_Type),
                     parmretStatus,parmretMsg};
 
 
             try
             {
                 SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "SAVE_CALL", param);
+                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "CALL_Queue_Abandon_Insert", param);
 
                 if (param[12].Value != DBNull.Value)// status
                     retStatus = Convert.ToInt32(param[12].Value);
+                if (param[57].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt32(param[57].Value);
                 else
                     retStatus = 0;
             }
@@ -244,13 +346,33 @@ namespace CallCenterCoreAPI.Database.Repository
             {
                 retStatus = -1;
             }
-
-
-
             return retStatus;
-
         }
         #endregion
+        public async Task<int> AddUser(SignUPModel UserDetail)
+        {
+            int retStatus = 0;
+            SqlParameter parmretStatus = new SqlParameter();
+            parmretStatus.ParameterName = "@retStatus";
+            parmretStatus.DbType = DbType.Int32;
+            parmretStatus.Size = 8;
+            parmretStatus.Direction = ParameterDirection.Output;
+            SqlParameter[] param ={
+                    new SqlParameter("@USER_NAME",UserDetail.USER_NAME),
+                    new SqlParameter("@PASSWORD",Utility.EncryptText(UserDetail.PASSWORD.Trim())),
+                    new SqlParameter("@NAME",UserDetail.NAME),
+                    new SqlParameter("@ADDRESS",UserDetail.ADDRESS),
+                    new SqlParameter("@MOBILE_NO",UserDetail.MOBILE_NO),
+                    new SqlParameter("@EMAIL_ID",UserDetail.EMAIL_ID),
+                    parmretStatus
+                    };
+            SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "SignUpConsumer", param);
+            if (param[6].Value != DBNull.Value)// status
+                retStatus = Convert.ToInt32(param[6].Value);
+            else
+                retStatus = 2;
+            return retStatus;
+        }
 
         #region SearchComplaint
         /// <summary>

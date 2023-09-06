@@ -243,6 +243,69 @@ namespace CallCenterCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("CheckUserAvailability")]
+        public async Task<IActionResult> CheckUserAvailabile(CheckUserAvailableModel modelUser)
+        {
+            ReturnStatusModel returnStatus = new ReturnStatusModel();
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            Int64 retStatus = 0;
+            string msg = string.Empty;
+            retStatus = await modelComplaintRepository.CheckUser(modelUser);
+            if (retStatus > 0)
+            {
+                returnStatus.response = 1;
+                returnStatus.status = "User Already Exist";
+                return Ok(returnStatus);
+            }
+            else if (retStatus == 0)
+            {
+                returnStatus.response = 1;
+                returnStatus.status = "User Does Not Exist";
+                return Ok(returnStatus);
+            }
+
+            else
+            {
+                returnStatus.response = 0;
+                returnStatus.status = "Exception";
+                return BadRequest(returnStatus);
+            }
+
+
+        }
+
+        [HttpPost]
+        [Route("SignUP")]
+        public async Task<IActionResult> SignUP(SignUPModel UserDetail)
+        {
+            ReturnStatusModel returnStatus = new ReturnStatusModel();
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            int retStatus = await modelComplaintRepository.AddUser(UserDetail);
+            if (retStatus == 1)
+            {
+                returnStatus.response = 1;
+                returnStatus.status = "User has been Successfully";
+                return Ok(returnStatus);
+            }
+            else if (retStatus == 0)
+            {
+                returnStatus.response = 0;
+                returnStatus.status = "User Name already exist";
+                return Ok(returnStatus);
+            }
+
+            else
+            {
+                returnStatus.response = 0;
+                returnStatus.status = "Error in Registeration Please try again";
+                return BadRequest(returnStatus);
+            }
+
+        }
+
+        [HttpPost]
         [Route("CallDetails")]
         public async Task<IActionResult> CallDetails(CallDetailModel modelRemark)
         {
