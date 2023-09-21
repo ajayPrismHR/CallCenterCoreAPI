@@ -260,19 +260,9 @@ namespace CallCenterCoreAPI.Database.Repository
             parmretMsg.Direction = ParameterDirection.Output;
 
             SqlParameter[] param ={
-                new SqlParameter("@Date",modelRemark.date),
                 new SqlParameter("@Date1",modelRemark.date),
                     new SqlParameter("@Total_Calls_Offered",modelRemark.Total_Calls_Offered),
                     new SqlParameter("@Total_Calls_Answered",modelRemark.Total_Calls_Answered),
-                    new SqlParameter("@Calls_Answered_within_60_Sec",modelRemark.Calls_Answered_within_60_Sec),
-                    new SqlParameter("@Calls_Answered_After_60_Sec",modelRemark.Calls_Answered_After_60_Sec),
-                    new SqlParameter("@Percent_Calls_Attended_within_60_Second",modelRemark.Percent_Calls_Attended_within_60_Sec),
-                    new SqlParameter("@Percent_Calls_Attended_After_60_Second",modelRemark.Percent_Calls_Attended_After_60_Sec),
-                    new SqlParameter("@Calls_Abandon",modelRemark.Calls_Abandon),
-                    new SqlParameter("@Call_Abandon_Percentage",modelRemark.Call_Abandon_Percentage),
-                    new SqlParameter("@Calls_Abandon_within_60_Sec",modelRemark.Calls_Abandon_within_60_Sec),
-                    new SqlParameter("@Total_Call_Wait_Time",modelRemark.Total_Call_Wait_Time),
-                    new SqlParameter("@Call_Wait_Time_more_than_60_Sec",modelRemark.Call_Wait_Time_more_than_60_Sec),
                     new SqlParameter("@Short_Calls",modelRemark.Short_Calls),
                     new SqlParameter("@Ans_LessThan_5_Secs",modelRemark.Ans_LessThan_5_Secs),
                     new SqlParameter("@Ans_6to10_Secs",modelRemark.Ans_6to10_Secs),
@@ -333,11 +323,8 @@ namespace CallCenterCoreAPI.Database.Repository
 
             try
             {
-                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "SAVE_CALL", param);
                 SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "CALL_Queue_Abandon_Insert", param);
 
-                if (param[12].Value != DBNull.Value)// status
-                    retStatus = Convert.ToInt32(param[12].Value);
                 if (param[57].Value != DBNull.Value)// status
                     retStatus = Convert.ToInt32(param[57].Value);
                 else
