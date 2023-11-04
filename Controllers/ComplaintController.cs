@@ -217,7 +217,7 @@ namespace CallCenterCoreAPI.Controllers
 
         [HttpPost]
         [Route("GetComplaintCurrentStatusList")]
-        public IActionResult GetFRTWiseComplaint()
+        public IActionResult GetComplaintCurrentStatusList()
         {
             ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
             ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
