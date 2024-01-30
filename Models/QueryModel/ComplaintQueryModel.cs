@@ -20,7 +20,12 @@ namespace CallCenterCoreAPI.Models.QueryModel
         public DateTime TIME_STAMP { get; set; }
     }
 
-    
+    public class COMPLAINTIVR
+    {
+        public string KNO { get; set; }
+        public int Complaint_type { get; set; }
+        public string MobileNo { get; set; }
+    }
 
     public class COMPLAINT
     {
@@ -45,7 +50,19 @@ namespace CallCenterCoreAPI.Models.QueryModel
         public string REMARKS { get; set; }
         public int UserId { get; set; }
     }
-
+    public class ModelKNO
+    {
+        public string KNO { get; set; }
+    }
+    public class ModelPowerOutage
+    {
+        public Int64 OFFICE_CODE { get; set; }
+        public string START_TIME { get; set; }
+        public string END_TIME { get; set; }
+        public string COLONIES { get; set; }
+        public string SHUT_DOWN_INFORMATION { get; set; }
+        public string INFORMATION_SOURCE { get; set; }
+    }
     public class COMPLAINT_SEARCH
     {
         public long OFFICE_CODE { get; set; }
@@ -62,7 +79,20 @@ namespace CallCenterCoreAPI.Models.QueryModel
         public string Complaint_Status { get; set; }
 
     }
+    public class COMPLAINT_STATUS
+    {
+        public string COMPLAINT_NO { get; set; }
+        public string Complaint_Status { get; set; }
 
+    }
+    public class ComplaintSearchQueryModelComplaintNo
+    {
+        public string ComplaintNo { get; set; }
+    }
+    public class ComplaintSearchQueryModelKNO
+    {
+        public string KNO { get; set; }
+    }
     public class MST_SUB_COMPLAINT_TYPE
     {
         public int ID { get; set; }

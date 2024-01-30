@@ -103,6 +103,158 @@ namespace CallCenterCoreAPI.Database.Repository
 
         }
         #endregion
+
+        #region SaveComplaintDetailIVR
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="modelComplaint"></param>
+        /// <returns></returns>
+        public async Task<Int64> SaveComplaintDetailIVR(COMPLAINTIVR modelComplaint)
+        {
+            Int64 retStatus = 0;
+            string retMsg = String.Empty; ;
+            COMPLAINTIVR obj = new COMPLAINTIVR();
+            obj = modelComplaint;
+
+            SqlParameter parmretStatus = new SqlParameter();
+            parmretStatus.ParameterName = "@retStatus";
+            parmretStatus.DbType = DbType.Int32;
+            parmretStatus.Size = 8;
+            parmretStatus.Direction = ParameterDirection.Output;
+
+            SqlParameter parmretMsg = new SqlParameter();
+            parmretMsg.ParameterName = "@retMsg";
+            parmretMsg.DbType = DbType.String;
+            parmretMsg.Size = 8;
+            parmretMsg.Direction = ParameterDirection.Output;
+
+
+            SqlParameter parmretComplaint_no = new SqlParameter();
+            parmretComplaint_no.ParameterName = "@retComplaint_no";
+            parmretComplaint_no.DbType = DbType.Int64;
+            parmretComplaint_no.Size = 8;
+            parmretComplaint_no.Direction = ParameterDirection.Output;
+            SqlParameter[] param ={
+                    new SqlParameter("@KNO",modelComplaint.KNO),
+                    new SqlParameter("@MOBILE_NO",modelComplaint.MobileNo),
+                    new SqlParameter("@COMPLAINT_TYPE",modelComplaint.Complaint_type),
+                    parmretStatus,parmretMsg,parmretComplaint_no};
+            try
+            {
+                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "COMPLAINTS_REGISTER_IVR", param);
+
+                if (param[5].Value != DBNull.Value)// status
+                    retStatus = Convert.ToInt64(param[5].Value);
+                if (retStatus > 0 && modelComplaint.MobileNo.Length == 10)
+                {
+                    _logger.LogInformation(modelComplaint.MobileNo.ToString());
+                    ModelSmsAPI modelSmsAPI = new ModelSmsAPI();
+                    modelSmsAPI.To = "91" + modelComplaint.MobileNo.ToString();
+                    modelSmsAPI.Smstext = "Dear Consumer,Your Complaint has been registered with complaint No. " + retStatus + " on Date: " + DateTime.Now.ToString("dd-MMM-yyyy") + " AVVNL";
+
+                    TextSmsAPI textSmsAPI = new TextSmsAPI();
+                    string response = await textSmsAPI.RegisterComplaintSMS(modelSmsAPI);
+
+                    PUSH_SMS_DETAIL_ConsumerIVR(modelComplaint, response, modelSmsAPI.Smstext);
+
+                }
+                else
+                    retStatus = 0;
+            }
+            catch (Exception ex)
+            {
+                retStatus = -1;
+            }
+            return retStatus;
+
+        }
+        #endregion
+        #region GetPendingComplaintNo
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="complaintNo"></param>
+        /// <returns></returns>
+        public List<COMPLAINT_STATUS> GetPendingComplaintNo(string complaintNo)
+        {
+            List<COMPLAINT_STATUS> obj = new List<COMPLAINT_STATUS>();
+            SqlParameter[] param ={
+                    new SqlParameter("@Complaint_NO",complaintNo) };
+
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "GetComplaintStatusIVR", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new COMPLAINT_STATUS
+                    {
+                        //Consumer Info
+                        //SDO_CODE = Convert.ToString(dr["SDO_CODE"]),
+
+                        COMPLAINT_NO = Convert.ToString(dr["COMPLAINT_NO"]),
+                        Complaint_Status = Convert.ToString(dr["Complaint_Status"]),
+                    }
+                    );
+            }
+            return (obj);
+        }
+        #endregion
+        #region GetPendingComplaintNoByKNO
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="complaintNo"></param>
+        /// <returns></returns>
+        public List<COMPLAINT_STATUS> GetPendingComplaintNoByKNO(string KNO)
+        {
+            List<COMPLAINT_STATUS> obj = new List<COMPLAINT_STATUS>();
+            SqlParameter[] param ={
+                    new SqlParameter("@Kno",KNO) };
+
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "GetComplaintStatusByKNOIVR", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new COMPLAINT_STATUS
+                    {
+                        //Consumer Info
+                        //SDO_CODE = Convert.ToString(dr["SDO_CODE"]),
+
+                        COMPLAINT_NO = Convert.ToString(dr["COMPLAINT_NO"]),
+                        Complaint_Status = Convert.ToString(dr["Complaint_Status"]),
+                    }
+                    );
+            }
+            return (obj);
+        }
+        #endregion
+
+        #region SearchComplaintIVR
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param name="kno"></param>
+        /// <returns></returns>
+        public DataSet SearchComplaintIVR(COMPLAINTIVR modelComplaint)
+        {
+            DataSet ds = new DataSet();
+            try
+            {
+                SqlParameter[] param = { new SqlParameter("@kno", modelComplaint.KNO),
+                new SqlParameter("@Complaint_Type", modelComplaint.Complaint_type)};
+                ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "Search_ComplaintIVR", param);
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return ds;
+        }
+        #endregion
         #region CheckUser
         /// <summary>
         /// Save Complaint
@@ -427,6 +579,56 @@ namespace CallCenterCoreAPI.Database.Repository
         }
         #endregion
 
+        #region CheckMobileAvailableDetail
+        public List<KnoList> CheckMobileAvailableDetail(ModelMobile mobileno)
+        {
+            List<KnoList> obj = new List<KnoList>();
+            SqlParameter[] param =
+                {
+                new SqlParameter("@mobile_no",mobileno.MobileNo)};
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "CheckMobileNoRegister", param);
+            //Bind Complaint generic list using dataRow     
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                obj.Add(
+
+                    new KnoList
+                    {
+                        Kno = Convert.ToString(dr["KNO"]),
+                    }
+                    );
+            }
+            return (obj);
+        }
+        #endregion
+        #region CheckPowerOutageList
+        /// <summary>
+        /// Save Complaint
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
+        public List<ModelPowerOutage> CheckPowerOutageList(ModelKNO Kno)
+        {
+            List<ModelPowerOutage> PowerOutage = new List<ModelPowerOutage>();
+            ModelPowerOutage objBlank = new ModelPowerOutage();
+            SqlParameter[] param = { new SqlParameter("@KNO", Kno.KNO) };
+            DataSet ds = SqlHelper.ExecuteDataset(conn, CommandType.StoredProcedure, "CHECK_POWER_OUTAGE_IVR", param);
+
+            foreach (DataRow dr in ds.Tables[0].Rows)
+            {
+                objBlank = new ModelPowerOutage();
+                objBlank.OFFICE_CODE = Convert.ToInt64(dr.ItemArray[0].ToString());
+                objBlank.START_TIME = dr.ItemArray[1].ToString();
+
+                objBlank.END_TIME = dr.ItemArray[2].ToString();
+                objBlank.COLONIES = dr.ItemArray[3].ToString();
+                objBlank.SHUT_DOWN_INFORMATION = dr.ItemArray[4].ToString();
+                objBlank.INFORMATION_SOURCE = dr.ItemArray[5].ToString();
+                PowerOutage.Add(objBlank);
+            }
+            return PowerOutage;
+        }
+        #endregion
         #region GetPendingComplaintFRTWise
         /// <summary>
         /// Save Complaint
@@ -623,7 +825,30 @@ namespace CallCenterCoreAPI.Database.Repository
         }
         #endregion
 
+        public int PUSH_SMS_DETAIL_ConsumerIVR(COMPLAINTIVR modelRemark, string response, string SMS)
+        {
+            int retStatus = 0;
+            string retMsg = String.Empty; ;
+            COMPLAINTIVR obj = new COMPLAINTIVR();
+            obj = modelRemark;
+            SqlParameter[] param =
+                {
+                new SqlParameter("@PHONE_NO",modelRemark.MobileNo),
+                new SqlParameter("@TEXT_MEESAGE",SMS),
+                new SqlParameter("@DELIVERY_RESPONSE",response),
+                new SqlParameter("@REMARK","SMS SENT")};
+            try
+            {
+                SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "PUSH_SMS_DETAIL", param);
+            }
+            catch (Exception ex)
+            {
+                retStatus = -1;
+            }
 
+            return retStatus;
+
+        }
         public int PUSH_SMS_DETAIL_Consumer(COMPLAINT modelRemark, string response,string SMS)
         {
             int retStatus = 0;

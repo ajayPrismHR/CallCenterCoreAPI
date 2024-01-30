@@ -63,6 +63,67 @@ namespace CallCenterCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("SaveComplaintIVR")]
+        public async Task<IActionResult> SaveComplaintIVR(COMPLAINTIVR modelComplaint)
+        {
+            ReturnStatusModel returnStatus = new ReturnStatusModel();
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            Int64 retStatus = 0;
+            string msg = string.Empty;
+            DataSet dsResponse = modelComplaintRepository.SearchComplaintIVR(modelComplaint);
+            if (dsResponse.Tables[0].Rows.Count > 0)
+            {
+                if (Convert.ToInt16(dsResponse.Tables[0].Rows[0]["COMPLAINT_status"].ToString()) != 2)
+                {
+                    _logger.LogInformation("You Already Have a pending Complaint No." + dsResponse.Tables[0].Rows[0]["COMPLAINT_NO"].ToString());
+                    returnStatus.response = 0;
+                    returnStatus.status = "You Already Have a pending Complaint No. " + dsResponse.Tables[0].Rows[0]["COMPLAINT_NO"].ToString();
+                    return BadRequest(returnStatus);
+                }
+            }
+            else
+            {
+                retStatus = await modelComplaintRepository.SaveComplaintDetailIVR(modelComplaint);
+            }
+            if (retStatus > 0)
+            {
+                returnStatus.response = 1;
+                returnStatus.status = "Complaint Successfully Registered With Complaint No. " + retStatus.ToString();
+                return Ok(returnStatus);
+            }
+
+            else
+            {
+                returnStatus.response = 0;
+                returnStatus.status = "Error in Saving Complaint";
+                return BadRequest(returnStatus);
+            }
+
+
+        }
+
+        [HttpPost]
+        [Route("SearchComplaintStatusByComplaintNo")]
+        public IActionResult SearchComplaintStatusByComplaintNo(ComplaintSearchQueryModelComplaintNo complaintSearchQueryModel)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            List<COMPLAINT_STATUS> lstComplaints = modelComplaintRepository.GetPendingComplaintNo(complaintSearchQueryModel.ComplaintNo);
+            return Ok(lstComplaints);
+        }
+
+        [HttpPost]
+        [Route("SearchComplaintStatusByKNo")]
+        public IActionResult SearchComplaintStatusByKNo(ComplaintSearchQueryModelKNO complaintSearchQueryModel)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            List<COMPLAINT_STATUS> lstComplaints = modelComplaintRepository.GetPendingComplaintNoByKNO(complaintSearchQueryModel.KNO);
+            return Ok(lstComplaints);
+        }
+
+        [HttpPost]
         [Route("SearchComplaintByKNO")]
         public IActionResult SearchComplaintByKNO(ComplaintSearchQueryModel complaintSearchQueryModel)
         {
@@ -313,6 +374,29 @@ namespace CallCenterCoreAPI.Controllers
                 return BadRequest(returnStatus);
             }
 
+        }
+
+        [HttpPost]
+        [Route("CheckPowerOutage")]
+        public IActionResult CheckPowerOutage(ModelKNO KNo)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            List<ModelPowerOutage> lst;
+            lst = modelComplaintRepository.CheckPowerOutageList(KNo);
+            return Ok(lst);
+        }
+
+        [HttpPost]
+        [Route("CheckMobileAvailable")]
+        public IActionResult CheckMobileAvailable(ModelMobile mobileno)
+        {
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+
+            List<KnoList> obj;
+            obj = modelComplaintRepository.CheckMobileAvailableDetail(mobileno);
+            return Ok(obj);
         }
 
         [HttpPost]
