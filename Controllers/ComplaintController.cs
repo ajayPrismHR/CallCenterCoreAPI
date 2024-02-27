@@ -63,6 +63,36 @@ namespace CallCenterCoreAPI.Controllers
         }
 
         [HttpPost]
+        [Route("ConsumerStatus")]
+        public async Task<IActionResult> ConsumerStatus(ModelKNO KnoDetail)
+        {
+            ReturnStatusModel returnStatus = new ReturnStatusModel();
+            ILogger<ComplaintRepository> modelLogger = _loggerFactory.CreateLogger<ComplaintRepository>();
+            ComplaintRepository modelComplaintRepository = new ComplaintRepository(modelLogger);
+            int retStatus = await modelComplaintRepository.ConsumerStatusCheck(KnoDetail);
+            if (retStatus == 1)
+            {
+                returnStatus.response = 1;
+                returnStatus.status = "Kno Exists";
+                return Ok(returnStatus);
+            }
+            else if (retStatus == 0)
+            {
+                returnStatus.response = 0;
+                returnStatus.status = "Invalid Kno";
+                return Ok(returnStatus);
+            }
+
+            else
+            {
+                returnStatus.response = 0;
+                returnStatus.status = "Error in Checking Kno";
+                return BadRequest(returnStatus);
+            }
+
+        }
+
+        [HttpPost]
         [Route("SaveComplaintIVR")]
         public async Task<IActionResult> SaveComplaintIVR(COMPLAINTIVR modelComplaint)
         {

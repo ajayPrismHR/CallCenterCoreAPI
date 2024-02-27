@@ -104,6 +104,26 @@ namespace CallCenterCoreAPI.Database.Repository
         }
         #endregion
 
+        public async Task<int> ConsumerStatusCheck(ModelKNO KnoDetail)
+        {
+            int retStatus = 0;
+            SqlParameter parmretStatus = new SqlParameter();
+            parmretStatus.ParameterName = "@Ret_Status";
+            parmretStatus.DbType = DbType.Int32;
+            parmretStatus.Size = 8;
+            parmretStatus.Direction = ParameterDirection.Output;
+            SqlParameter[] param ={
+                    new SqlParameter("@KNO",KnoDetail.KNO),
+                    parmretStatus
+                    };
+            SqlHelper.ExecuteNonQuery(conn, CommandType.StoredProcedure, "CheckConsumerStatus", param);
+            if (param[1].Value != DBNull.Value)// status
+                retStatus = Convert.ToInt32(param[1].Value);
+            else
+                retStatus = 2;
+            return retStatus;
+        }
+
         #region SaveComplaintDetailIVR
         /// <summary>
         /// Save Complaint
